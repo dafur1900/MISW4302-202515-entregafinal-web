@@ -1,71 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Vue Card UI</title>
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div id="app">
-    <transition name="fade" mode="out-in">
-      <card-wrapper :key="currentIndex" :card="currentCard"></card-wrapper>
-    </transition>
+  <head>
+    <meta charset="UTF-8">
+    <title>Mis Alarmas</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <link rel="stylesheet" href="./version2/style.css" />
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <transition name="fade" mode="out-in">
+        <div class="card" :key="currentIndex">
+          <!--div class="card-header">
+			<i class="material-icons">face</i>
+			<i class="material-icons">clock</i>
+            <div class="title">{{ currentCard.title }}</div>
+            <div class="options">{{ currentCard.options }}</div>
+          </div>-->
+			<div class="card-header">
+				<div class="title">
+					<i class="material-icons" style="vertical-align: middle; margin-right: 8px;">access_time</i>
+					{{ currentCard.title }}
+				</div>
+				<div class="options">{{ currentCard.options }}</div>
+			</div>
 
-    <div class="buttons">
-      <button @click="prevCard" :disabled="currentIndex === 0">◀ Prev</button>
-      <button @click="nextCard" :disabled="currentIndex === cards.length - 1">Next ▶</button>
+          <div class="card-content">
+            <!-- FULL Layout -->
+            <div v-if="currentCard.layout === 'full'" class="content-full">
+              <component :is="currentCard.component" :data="currentCard.data"></component>
+            </div>
+            <!-- SPLIT Layout -->
+            <div v-else-if="currentCard.layout === 'split'" class="content-split">
+              <div class="left-pane">
+                <component :is="currentCard.component.left" :data="currentCard.data.left"></component>
+              </div>
+              <div class="right-pane">
+                <component :is="currentCard.component.right" :data="currentCard.data.right"></component>
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
+      <div class="buttons">
+        <button @click="prevCard" :disabled="currentIndex === 0">◀ Prev</button>
+        <button @click="nextCard" :disabled="currentIndex === cards.length - 1">Next ▶</button>
+      </div>
+      <div class="counter"> Card {{ currentIndex + 1 }} of {{ cards.length }}
+      </div>
     </div>
-    <div class="counter">
-      Card {{ currentIndex + 1 }} of {{ cards.length }}
-    </div>
-  </div>
-
-  <!-- Load components -->
-  <script type="module">
-	import { CardWrapper } from './components/CardWrapper.js';
-    import { FormExample } from './components/FormExample.js';
-    import { TableExample } from './components/TableExample.js';
-    import { ImageFull } from './components/ImageFull.js';
-    import { ImageSplit } from './components/ImageSplit.js';
-	import { LabeledInput } from './components/LabeledInput.js';
-	import { iPodForm } from './components/iPodForm.js';
-
-
-    const app = Vue.createApp({
-      components: {
-        CardWrapper
-      },
-      data() {
-        return {
-          currentIndex: 0,
-          cards: [
-            {
-              title: 'Form Card',
-              options: 'Edit | Save',
+    <script>
+      const FormExample = {
+        props: ['data'],
+        template: `
+        
+				<div>
+					<h3>Form Example</h3>
+					<input type="text" placeholder="Enter name" />
+					<textarea placeholder="Enter description"></textarea>
+					<label class="switch">
+						<input type="checkbox" v-model="checked">
+							<span class="slider"></span>
+						</label> Toggle: {{ checked ? 'On' : 'Off' }}
+						<br>
+							<br>
+								<button @click="alertClicked">Submit</button>
+							</div>
+      `,
+        data() {
+          return {
+            checked: false
+          };
+        },
+        methods: {
+          alertClicked() {
+            alert('Submitted!');
+          }
+        }
+      };
+      const TableExample = {
+        props: ['data'],
+        template: `
+        
+							<div>
+								<h3>Sample Table</h3>
+								<table>
+									<tr>
+										<th>Name</th>
+										<th>Age</th>
+									</tr>
+									<tr v-for="(item, i) in data" :key="i">
+										<td>{{ item.name }}</td>
+										<td>{{ item.age }}</td>
+									</tr>
+								</table>
+							</div>
+      `
+      };
+      const ImageFull = {
+        template: `
+  
+							<img class="full-img" :src="imgSrc" @error="onError" alt="Image" />
+`,
+        props: ['data'],
+        data() {
+          return {
+            imgSrc: this.data.src
+          };
+        },
+        methods: {
+          onError() {
+            this.imgSrc = 'fallback.png'; // Or any default/fallback image
+          }
+        }
+      };
+      const ImageSplit = {
+        template: `
+  
+							<img class="full-img" :src="imgSrc" @error="onError" alt="Image" />
+`,
+        props: ['data'],
+        data() {
+          return {
+            imgSrc: this.data.src
+          };
+        },
+        methods: {
+          onError() {
+            this.imgSrc = 'fallback.png'; // Or any default/fallback image
+          }
+        }
+      };
+      const LabeledInput = {
+        props: ['label', 'modelValue'],
+        emits: ['update:modelValue'],
+        template: `
+		
+							<div class="labeled-input">
+								<label>{{ label }}</label>
+								<input type="text" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
+							</div>
+		`
+      };
+      const iPodForm = {
+        components: {
+          LabeledInput
+        },
+        data() {
+          return {
+            form: {
+              first: '',
+              last: '',
+              email: '',
+              phone: '',
+              city: ''
+            }
+          };
+        },
+        template: `
+			
+							<div class="ipod-form">
+								<LabeledInput label="First Name" v-model="form.first" />
+								<LabeledInput label="Last Name" v-model="form.last" />
+								<LabeledInput label="Email" v-model="form.email" />
+								<LabeledInput label="Phone" v-model="form.phone" />
+								<LabeledInput label="City" v-model="form.city" />
+								<button class="btn-rounded-md" @click="submit">Submit</button>
+							</div>
+		`,
+        methods: {
+          submit() {
+            alert(`Submitted:\n${JSON.stringify(this.form, null, 2)}`);
+          }
+        }
+      };
+      const app = Vue.createApp({
+        data() {
+          return {
+            currentIndex: 0,
+            cards: [{
+              title: 'Welcome',
+              options: 'Start',
               layout: 'full',
               component: FormExample,
               data: {}
-            },
-            {
-              title: 'Table Card',
+            }, {
+              title: 'Table Example',
               options: 'Export',
               layout: 'full',
               component: TableExample,
-              data: [
-                { name: 'Alice', age: 25 },
-                { name: 'Bob', age: 30 },
-                { name: 'Charlie', age: 35 }
-              ]
-            },
-            {
-              title: 'Full Image Card',
-              options: '',
+              data: [{
+                name: 'Alice',
+                age: 25
+              }, {
+                name: 'Bob',
+                age: 30
+              }, {
+                name: 'Charlie',
+                age: 35
+              }]
+            }, {
+              title: 'Image Full Layout',
+              options: 'View',
               layout: 'full',
               component: ImageFull,
-			  data: { src: './resources/QR.png' }
-            },
-            {
+              data: {
+                src: 'QR.png'
+              }
+              //data: { src: 'https://via.placeholder.com/780x460?text=Full+Image' }
+            }, {
               title: 'Split Image + Form',
               options: 'View | Fill',
               layout: 'split',
@@ -75,44 +219,47 @@
               },
               data: {
                 left: {
-                  src: 'https://via.placeholder.com/400x300?text=Split+Image',
+                  src: 'background.png',
                   caption: 'Left pane image'
                 },
                 right: {}
               }
-            },
-			{
-				title: 'iPod Form Card',
-				options: 'Submit',
-				layout: 'split',
-				component: {
-					left: ImageFull,
-					right: iPodForm
-				},
-				data: {
-					left: { src: 'https://via.placeholder.com/400x300?text=iPod+Form+Image' },
-					right: {}
-				}
-			}
-          ]
-        };
-      },
-      computed: {
-        currentCard() {
-          return this.cards[this.currentIndex];
-        }
-      },
-      methods: {
-        nextCard() {
-          if (this.currentIndex < this.cards.length - 1) this.currentIndex++;
+            }, {
+              title: 'iPod Form Card',
+              options: 'Submit',
+              layout: 'split',
+              component: {
+                left: ImageFull,
+                right: iPodForm
+              },
+              data: {
+                left: {
+                  src: 'background.png'
+                },
+                right: {}
+              }
+            }]
+          };
         },
-        prevCard() {
-          if (this.currentIndex > 0) this.currentIndex--;
+        computed: {
+          currentCard() {
+            return this.cards[this.currentIndex];
+          }
+        },
+        methods: {
+          nextCard() {
+            if (this.currentIndex < this.cards.length - 1) {
+              this.currentIndex++;
+            }
+          },
+          prevCard() {
+            if (this.currentIndex > 0) {
+              this.currentIndex--;
+            }
+          }
         }
-      }
-    });
-
-    app.mount('#app');
-  </script>
-</body>
+      });
+      app.mount('#app');
+    </script>
+  </body>
 </html>
