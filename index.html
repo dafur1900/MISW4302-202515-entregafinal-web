@@ -1,265 +1,752 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Mis Alarmas</title>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-    <link rel="stylesheet" href="./version2/style.css" />
-	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  </head>
-  <body>
-    <div id="app">
-      <transition name="fade" mode="out-in">
-        <div class="card" :key="currentIndex">
-          <!--div class="card-header">
-			<i class="material-icons">face</i>
-			<i class="material-icons">clock</i>
-            <div class="title">{{ currentCard.title }}</div>
-            <div class="options">{{ currentCard.options }}</div>
-          </div>-->
-			<div class="card-header">
-				<div class="title">
-					<i class="material-icons" style="vertical-align: middle; margin-right: 8px;">access_time</i>
-					{{ currentCard.title }}
+	<head>
+		<meta charset="UTF-8">
+		<title>Mis Alarmas</title>
+		<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+		<link rel="stylesheet" href="style.css" />
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	</head>
+	<body>
+		<div id="app">
+			<transition name="fade" mode="out-in">
+				<div class="card" :key="currentIndex">
+					<!--div class="card-header"><i class="material-icons">face</i><i class="material-icons">clock</i><div class="title">{{ currentCard.title }}</div><div class="options">{{ currentCard.options }}</div></div>-->
+					<div class="card-header">
+						<div class="header-left">
+							<i class="material-icons icon-inline">access_time</i>
+							<span>{{ globalHeaderText }}</span>
+						</div>
+						<div class="header-right">
+							<i class="material-icons icon-inline">more_vert</i>
+							{{ currentCard.title }}
+						</div>
+					</div>
+					<div class="card-content">
+						<!-- FULL Layout -->
+						<!-- FULL Layout -->
+						<div v-if="currentCard.layout === 'full'" class="content-full">
+							<component
+								:is="currentCard.component"
+								:data="currentCard.data"
+								v-on="getComponentListeners()"
+							/>
+						</div>
+						<!-- SPLIT Layout -->
+						<div v-else-if="currentCard.layout === 'split'" class="content-split">
+							<div class="left-pane">
+								<component :is="currentCard.component.left" :data="currentCard.data.left"></component>
+							</div>
+							<div class="right-pane">
+								<component
+									:is="currentCard.component.right"
+									:data="currentCard.data.right"
+									v-on="getComponentListeners()"
+								/>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="options">{{ currentCard.options }}</div>
+			</transition>
+			<div class="buttons">
+				<button class="btn btn-success btn-rounded-md" @click="prevCard" :disabled="currentIndex === 0">Anterior</button>
+				<button class="btn btn-success btn-rounded-md btn-home" v-if="currentIndex !== 0" @click="goHome">Inicio</button>
+				<button class="btn btn-success btn-rounded-md" @click="nextCard" :disabled="currentIndex === cards.length - 1">Siguiente</button>
 			</div>
+			<div class="counter"> Card {{ currentIndex + 1 }} of {{ cards.length }}
+			</div>
+		</div>
+		<script>
+			window.CARD_INDEX = {
+				HOME: 0,
+				REGISTER: 1,
+				DOWNLOAD: 2,
+				QR: 3,
+				PHONE_REGISTER: 4,
+				PHONE_CONFIRM: 5,
+				WEEKLY_ALARMS: 6,
+				CREATE_ALARM: 7
+			};
 
-          <div class="card-content">
-            <!-- FULL Layout -->
-            <div v-if="currentCard.layout === 'full'" class="content-full">
-              <component :is="currentCard.component" :data="currentCard.data"></component>
-            </div>
-            <!-- SPLIT Layout -->
-            <div v-else-if="currentCard.layout === 'split'" class="content-split">
-              <div class="left-pane">
-                <component :is="currentCard.component.left" :data="currentCard.data.left"></component>
-              </div>
-              <div class="right-pane">
-                <component :is="currentCard.component.right" :data="currentCard.data.right"></component>
-              </div>
-            </div>
-          </div>
-        </div>
-      </transition>
-      <div class="buttons">
-        <button @click="prevCard" :disabled="currentIndex === 0">◀ Prev</button>
-        <button @click="nextCard" :disabled="currentIndex === cards.length - 1">Next ▶</button>
-      </div>
-      <div class="counter"> Card {{ currentIndex + 1 }} of {{ cards.length }}
-      </div>
+			function showToast(msg) {
+				const toast = document.getElementById('toast');
+				toast.textContent = msg;
+				toast.classList.add('show');
+				setTimeout(() => {
+					toast.classList.remove('show');
+				}, 3000);
+			}
+			const WelcomeComponent = {
+				props: ['data'],
+				template: `
+						
+						<div class="Welcome-form">
+							<h3>¡Bienvenido!</h3>
+							<div class="button-group">
+								<button class="btn btn-primary btn-rounded-md" @click="goToCard(1)">Regístrate</button>
+								<button class="btn btn-primary btn-rounded-md" @click="goToCard(4)">Continuar como usuario anónimo</button>
+							</div>
+						</div>`,
+				methods: {
+					alertClicked() {
+						showToast('Submitted!');
+					},
+					goToCard(index) {
+						this.$emit('navigate', index);
+					}
+				}
+			};
+			const FullImageComponent = {
+  template: `
+    <div class="image-container">
+      <img 
+        class="full-img" 
+        :src="imgSrc" 
+        :style="{ maxWidth: data.maxWidth || '200px', height: 'auto' }" 
+        @error="onError" 
+        alt="Image" 
+      />
     </div>
-    <script>
-      const FormExample = {
-        props: ['data'],
-        template: `
-        
-				<div>
-					<h3>Form Example</h3>
-					<input type="text" placeholder="Enter name" />
-					<textarea placeholder="Enter description"></textarea>
-					<label class="switch">
-						<input type="checkbox" v-model="checked">
-							<span class="slider"></span>
-						</label> Toggle: {{ checked ? 'On' : 'Off' }}
-						<br>
-							<br>
-								<button @click="alertClicked">Submit</button>
+  `,
+  props: ['data'],
+  data() {
+    return {
+      imgSrc: this.data.src
+    };
+  },
+  methods: {
+    onError() {
+      this.imgSrc = 'fallback.png'; // fallback image
+    }
+  }
+};
+
+			const MarketplaceComponent = {
+				template: `
+						
+						<div class="image-with-description">
+							<div class="top-image">
+								<img class="main-image" :src="imgSrc" @error="onError" alt="Main Image"/>
 							</div>
-      `,
-        data() {
-          return {
-            checked: false
-          };
-        },
-        methods: {
-          alertClicked() {
-            alert('Submitted!');
-          }
-        }
-      };
-      const TableExample = {
-        props: ['data'],
-        template: `
-        
-							<div>
-								<h3>Sample Table</h3>
-								<table>
+							<div class="bottom-section">
+								<div class="media-title-group">
+									<div class="left-image">
+										<img :src="data.bottomLeftImage" alt="Icon" />
+									</div>
+									<div class="title">{{ data.bottomTitle }}</div>
+								</div>
+								<div class="description">{{ data.bottomDescription }}</div>
+								<!-- New Button -->
+								<button class="btn btn-primary btn-rounded-md" @click="handleClick(2)">Descargar Ahora</button>
+							</div>
+						</div>`,
+				props: ['data'],
+				data() {
+					return {
+						imgSrc: this.data.topImage
+					};
+				},
+				methods: {
+					onError() { this.imgSrc = 'fallback.png'; },
+					buttonClicked() { showToast('Descargar!!!'); },
+					goToCard(index) { this.$emit('navigate', index); },
+					handleClick(index) {
+						this.buttonClicked();
+						this.goToCard(index);
+					}
+				}
+			};
+			const LeftImageComponent = {
+				template: `
+					
+						
+						<img class="full-img" :src="imgSrc" @error="onError" alt="Image" />`,
+				props: ['data'],
+				data() {
+					return {
+						imgSrc: this.data.src
+					};
+				},
+				methods: {
+					onError() {
+						this.imgSrc = 'fallback.png'; // Or any default/fallback image
+					}
+				}
+			};
+			const LabeledInputComponent = {
+				props: {
+					label: String,
+					modelValue: String,
+					type: {
+						type: String,
+						default: 'text'
+					}
+				},
+				emits: ['update:modelValue'],
+				template: `
+						
+						<div class="labeled-input">
+							<label>{{ label }}</label>
+							<input :type="type" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)"/>
+						</div>`
+			};
+			const SignInFormComponent = {
+				components: {
+					LabeledInputComponent
+				},
+				data() {
+					return {
+						form: {
+							name: '',
+							email: '',
+							phone: '',
+							password: '',
+							password2: ''
+						}
+					};
+				},
+				template: `
+						
+						<div class="signin-form">
+							<LabeledInputComponent label="Nombre" v-model="form.name" />
+							<LabeledInputComponent label="Email" v-model="form.email" />
+							<LabeledInputComponent label="Número telefónico" v-model="form.phone" />
+							<LabeledInputComponent label="Contraseña" v-model="form.password" type="password" />
+							<LabeledInputComponent label="Confirmar contraseña" v-model="form.password2" type="password" />
+							<button class="btn btn-primary btn-rounded-md" @click="submit">Crear cuenta</button>
+						</div>`,
+				methods: {
+					submit() {
+						showToast(`Submitted:\n${JSON.stringify(this.form, null, 2)}`);
+					},
+					goToCard(index) {
+						this.$emit('navigate', index);
+					}
+				}
+			};
+			const MobileRequestFormComponent = {
+				components: {
+					LabeledInputComponent
+				},
+				props: ['data'],
+				data() {
+					return {
+						form: {
+							phone: ''
+						}
+					};
+				},
+				template: `
+						
+						<div class="Welcome-form">
+							<h3>Ingresa tu número</h3>
+							<LabeledInputComponent label="Número telefónico" v-model="form.phone" />
+							<button class="btn btn-primary btn-rounded-md" @click="goToCard(5)">Siguiente</button>
+							<div class="description">{{ data.description }}</div>
+						</div>`,
+				methods: {
+					submit() {
+						showToast(`Submitted:\n${JSON.stringify(this.form, null, 2)}`);
+					},
+					goToCard(index) {
+						this.$emit('navigate', index);
+					}
+				}
+			};
+			const MobileResponseFormComponent = {
+				components: {
+					LabeledInputComponent
+				},
+				props: ['data'],
+				data() {
+					return {
+						form: {
+							phone_code: ''
+						}
+					};
+				},
+				template: `
+						
+						<div class="Welcome-form">
+							<h2>Hemos enviado un código a tu celular, introdúcelo</h2>
+							<LabeledInputComponent label="Código" v-model="form.phone_code" />
+							<button class="btn btn-primary btn-rounded-md" @click="goToCard(6)">Confirmar</button>
+							<div class="description">{{ data.description }}</div>
+						</div>`,
+				methods: {
+					submit() {
+						showToast(`Submitted:\n${JSON.stringify(this.form, null, 2)}`);
+					},
+					goToCard(index) {
+						this.$emit('navigate', index);
+					}
+				}
+			};
+			const WeeklyAlarmsTableComponent = {
+				template: `
+						
+						<div class="weekly-alarms-table">
+							<table>
+								<thead>
 									<tr>
-										<th>Name</th>
-										<th>Age</th>
+										<th class="day-col">Day</th>
+										<th v-for="(alarm, i) in 3" :key="i">Alarm {{ i + 1 }}</th>
 									</tr>
-									<tr v-for="(item, i) in data" :key="i">
-										<td>{{ item.name }}</td>
-										<td>{{ item.age }}</td>
+								</thead>
+								<tbody>
+									<tr v-for="(day, dayIndex) in days" :key="day">
+										<td class="day-label">
+											<span class="drop-cap">{{ day[0] }}</span>
+										</td>
+										<td v-for="(alarm, alarmIndex) in 3" :key="alarmIndex">
+											<!-- <div class="alarm-cell"><div class="alarm-label">Alarma {{ alarmIndex + 1 }}</div><div class="alarm-row"><span class="alarm-time">7:00 AM</span><label class="switch"><input type="checkbox" v-model="alarmStates[dayIndex][alarmIndex]"><span class="slider"></span></label></div></div> -->
+											<div class="alarm-cell-horizontal">
+												<div class="alarm-info">
+													<div class="alarm-label">{{ alarm.label }}</div>
+													<div class="alarm-time">{{ alarm.time }}</div>
+												</div>
+												<div class="alarm-toggle">
+													<label class="switch">
+														<input type="checkbox" v-model="alarm.enabled" />
+														<span class="slider"></span>
+													</label>
+												</div>
+											</div>
+										</td>
 									</tr>
-								</table>
+								</tbody>
+							</table>
+						</div>
+  `,
+				data() {
+					return {
+						days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+						alarmStates: Array(7).fill().map(() => Array(3).fill(false))
+					};
+				}
+			};
+			const AlarmTableComponent = {
+				props: ['data'],
+				data() {
+					return {
+					internalAlarms: JSON.parse(JSON.stringify(this.data.alarms)),
+					imgSrc: this.data.imgSrc || 'default-icon.png' // fallback if not provided
+					};
+				},
+				template: `
+					<div class="alarm-table" style="position: relative;">
+					<table>
+						<thead>
+						<tr>
+							<th>Día</th>
+							<th v-for="(col, colIndex) in 3" :key="'head-' + colIndex">Alarma {{ col }}</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr v-for="(day, rowIndex) in internalAlarms" :key="'row-' + rowIndex">
+							<td class="day-label">
+							<span class="day-initial">{{ day.name[0] }}</span>
+							</td>
+							<td v-for="(alarm, alarmIndex) in day.alarms" :key="'cell-' + alarmIndex">
+							<div class="alarm-cell-horizontal">
+								<div class="alarm-info">
+								<div class="alarm-label">{{ alarm.label }}</div>
+								<div class="alarm-time">{{ alarm.time }}</div>
+								</div>
+								<div class="alarm-toggle">
+								<label class="switch">
+									<input type="checkbox" v-model="alarm.enabled" />
+									<span class="slider"></span>
+								</label>
+								</div>
 							</div>
-      `
-      };
-      const ImageFull = {
-        template: `
-  
-							<img class="full-img" :src="imgSrc" @error="onError" alt="Image" />
-`,
-        props: ['data'],
-        data() {
-          return {
-            imgSrc: this.data.src
-          };
-        },
-        methods: {
-          onError() {
-            this.imgSrc = 'fallback.png'; // Or any default/fallback image
-          }
-        }
-      };
-      const ImageSplit = {
-        template: `
-  
-							<img class="full-img" :src="imgSrc" @error="onError" alt="Image" />
-`,
-        props: ['data'],
-        data() {
-          return {
-            imgSrc: this.data.src
-          };
-        },
-        methods: {
-          onError() {
-            this.imgSrc = 'fallback.png'; // Or any default/fallback image
-          }
-        }
-      };
-      const LabeledInput = {
-        props: ['label', 'modelValue'],
-        emits: ['update:modelValue'],
-        template: `
-		
-							<div class="labeled-input">
-								<label>{{ label }}</label>
-								<input type="text" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				
+					<!-- Floating Button -->
+					<button class="floating-btn" @click="goToCard(7)">
+						<img :src="imgSrc" alt="Floating Button" />
+					</button>
+					</div>
+				`,
+				methods: {
+					onFloatingBtnClick() {
+					alert('Floating button clicked!');
+					},
+					goToCard(index) {
+						this.$emit('navigate', index);
+					}
+				}
+			};
+
+
+			const NewAlarmFormComponent = {
+				props: {
+					days: {
+					type: Array,
+					default: () => ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+					}
+				},
+				emits: ['create', 'cancel'],
+				data() {
+					return {
+					form: {
+						name: '',
+						days: [],
+						time: '07:00',
+						repeats: false,
+						type: 'sound',
+						volume: 50
+					},
+					alarmTypes: [
+						{ value: 'sound', label: 'Sound' },
+						{ value: 'math', label: 'Math Challenge' },
+						{ value: 'photo', label: 'Take a Photo' }
+					]
+					};
+				},
+				methods: {
+					toggleDay(day) {
+					const index = this.form.days.indexOf(day);
+					if (index === -1) {
+						this.form.days.push(day);
+					} else {
+						this.form.days.splice(index, 1);
+					}
+					},
+					onCreate() {
+					this.$emit('create', { ...this.form });
+					},
+					onCancel() {
+					this.$emit('cancel');
+					}
+				},
+				template: `
+    
+						
+						<div class="alarm-form-card">
+							<h3>Crear Nueva Alarma</h3>
+							<div class="form-group input">
+								<label>Nombre de la alarma</label>
+								<input type="text" v-model="form.name" placeholder="Ej: Mañana" />
 							</div>
-		`
-      };
-      const iPodForm = {
-        components: {
-          LabeledInput
-        },
-        data() {
-          return {
-            form: {
-              first: '',
-              last: '',
-              email: '',
-              phone: '',
-              city: ''
-            }
-          };
-        },
-        template: `
-			
-							<div class="ipod-form">
-								<LabeledInput label="First Name" v-model="form.first" />
-								<LabeledInput label="Last Name" v-model="form.last" />
-								<LabeledInput label="Email" v-model="form.email" />
-								<LabeledInput label="Phone" v-model="form.phone" />
-								<LabeledInput label="City" v-model="form.city" />
-								<button class="btn-rounded-md" @click="submit">Submit</button>
+							<div class="form-group day-selector">
+								<label>Días de la semana</label>
+								<div class="day-grid">
+									<div
+								v-for="day in days"
+								:key="day"
+								:class="['day-cell', { selected: Array.isArray(form.days) && form.days.includes(day) }]"
+								@click="toggleDay(day)"
+								>
+								{{ day[0] }}
+								</div>
+								</div>
 							</div>
-		`,
-        methods: {
-          submit() {
-            alert(`Submitted:\n${JSON.stringify(this.form, null, 2)}`);
-          }
-        }
-      };
-      const app = Vue.createApp({
-        data() {
-          return {
-            currentIndex: 0,
-            cards: [{
-              title: 'Welcome',
-              options: 'Start',
-              layout: 'full',
-              component: FormExample,
-              data: {}
-            }, {
-              title: 'Table Example',
-              options: 'Export',
-              layout: 'full',
-              component: TableExample,
-              data: [{
-                name: 'Alice',
-                age: 25
-              }, {
-                name: 'Bob',
-                age: 30
-              }, {
-                name: 'Charlie',
-                age: 35
-              }]
-            }, {
-              title: 'Image Full Layout',
-              options: 'View',
-              layout: 'full',
-              component: ImageFull,
-              data: {
-                src: 'QR.png'
-              }
-              //data: { src: 'https://via.placeholder.com/780x460?text=Full+Image' }
-            }, {
-              title: 'Split Image + Form',
-              options: 'View | Fill',
-              layout: 'split',
-              component: {
-                left: ImageSplit,
-                right: FormExample
-              },
-              data: {
-                left: {
-                  src: 'background.png',
-                  caption: 'Left pane image'
-                },
-                right: {}
-              }
-            }, {
-              title: 'iPod Form Card',
-              options: 'Submit',
-              layout: 'split',
-              component: {
-                left: ImageFull,
-                right: iPodForm
-              },
-              data: {
-                left: {
-                  src: 'background.png'
-                },
-                right: {}
-              }
-            }]
-          };
-        },
-        computed: {
-          currentCard() {
-            return this.cards[this.currentIndex];
-          }
-        },
-        methods: {
-          nextCard() {
-            if (this.currentIndex < this.cards.length - 1) {
-              this.currentIndex++;
-            }
-          },
-          prevCard() {
-            if (this.currentIndex > 0) {
-              this.currentIndex--;
-            }
-          }
-        }
-      });
-      app.mount('#app');
-    </script>
-  </body>
+							<div class="form-group time-repeat-row">
+								<div class="time-picker">
+									<label for="hour-picker">Hora</label>
+									<input type="time" v-model="form.time" class="time-input" />
+								</div>
+								<div class="repeat-toggle">
+									<label for="repeat-switch">Repetir</label>
+									<label class="switch">
+										<input type="checkbox" v-model="form.repeats" />
+										<span class="slider"></span>
+									</label>
+								</div>
+							</div>
+							<div class="alarm-type-group">
+								<div class="alarm-type-option">
+									<input type="radio" id="alarmType1" name="alarmType" value="sound" v-model="form.type" />
+									<label for="alarmType1">Sonido</label>
+								</div>
+								<div class="alarm-type-option">
+									<input type="radio" id="alarmType2" name="alarmType" value="math" v-model="form.type" />
+									<label for="alarmType2">Reto matemático</label>
+								</div>
+								<div class="alarm-type-option">
+									<input type="radio" id="alarmType3" name="alarmType" value="photo" v-model="form.type" />
+									<label for="alarmType3">Foto</label>
+								</div>
+							</div>
+							<div class="form-group volume-control" v-if="form.type === 'sound'">
+								<label>Volumen</label>
+								<span class="volume-percent">{{ form.volume }}%</span>
+								<input type="range" min="0" max="100" v-model="form.volume" />
+							</div>
+							<div class="form-actions">
+								<button class="btn btn-secondary" @click="onCancel">Cancelar</button>
+								<button class="btn btn-primary" @click="onCreate" :disabled="!form.name">Crear</button>
+							</div>
+						</div>
+  `
+			};
+			const app = Vue.createApp({
+				data() {
+					return {
+						currentIndex: 0,
+						globalHeaderText: 'Alarm Challenge',
+						cards: [{
+							title: 'Inicio',
+							options: 'View | Fill',
+							layout: 'split',
+							component: {
+								left: LeftImageComponent,
+								right: WelcomeComponent
+							},
+							data: {
+								left: {
+									src: 'background.png',
+									maxWidth: '100%'
+								},
+								right: {}
+							}
+						}, {
+							title: 'Registro',
+							options: 'Submit',
+							layout: 'split',
+							component: {
+								left: FullImageComponent,
+								right: SignInFormComponent
+							},
+							data: {
+								left: {
+									src: 'background.png',
+									maxWidth: '100%'
+								},
+								right: {}
+							}
+						}, {
+							title: 'Descarga la App',
+							layout: 'full',
+							component: MarketplaceComponent,
+							data: {
+								topImage: 'mobile.png',
+								bottomLeftImage: 'googlePlay.png',
+								bottomTitle: 'Descarga la App Mobile',
+								bottomDescription: `Para usar la plataforma, descarga la app mobile disponible en android
+	Si ya la tienes puedes ir a escanear el código qr para iniciar sesión.`
+							}
+						}, {
+							title: 'Image Full Layout',
+							options: 'View',
+							layout: 'full',
+							component: FullImageComponent,
+							data: {
+								src: 'QR.png',
+								maxWidth: '50%'
+							}
+							//data: { src: 'https://via.placeholder.com/780x460?text=Full+Image' }
+						}, {
+							title: 'Registro celular',
+							options: 'View | Fill',
+							layout: 'split',
+							component: {
+								left: LeftImageComponent,
+								right: MobileRequestFormComponent
+							},
+							data: {
+								left: {
+									src: 'background.png',
+									caption: 'Left pane image'
+								},
+								right: {
+									description: 'Al continuar aceptas nuestras políticas de servicio y políticas de privacidad'
+								}
+							}
+						}, {
+							title: 'Registro celular',
+							options: 'View | Fill',
+							layout: 'split',
+							component: {
+								left: LeftImageComponent,
+								right: MobileResponseFormComponent
+							},
+							data: {
+								left: {
+									src: 'background.png',
+									caption: 'Left pane image'
+								},
+								right: {
+									description: ''
+								}
+							}
+						}, {
+							title: 'Alarmas por Día',
+							layout: 'full',
+							component: AlarmTableComponent,
+							data: {
+								imgSrc: 'plus50.png', // <--- Your floating button image
+								alarms:[{
+									name: 'Lunes',
+									alarms: [{
+										label: 'Mañana',
+										time: '7:00 AM',
+										enabled: true
+									}, {
+										label: 'Medio Día',
+										time: '12:00 PM',
+										enabled: false
+									}, {
+										label: 'Tarde',
+										time: '6:00 PM',
+										enabled: true
+									}]
+								}, {
+									name: 'Martes',
+									alarms: [{
+										label: 'Mañana',
+										time: '7:15 AM',
+										enabled: true
+									}, {
+										label: 'Medio Día',
+										time: '12:15 PM',
+										enabled: false
+									}, {
+										label: 'Tarde',
+										time: '6:15 PM',
+										enabled: true
+									}]
+								}, {
+									name: 'Miércoles',
+									alarms: [{
+										label: 'Mañana',
+										time: '7:30 AM',
+										enabled: false
+									}, {
+										label: 'Medio Día',
+										time: '12:30 PM',
+										enabled: true
+									}, {
+										label: 'Tarde',
+										time: '6:30 PM',
+										enabled: true
+									}]
+								}, {
+									name: 'Jueves',
+									alarms: [{
+										label: 'Mañana',
+										time: '7:45 AM',
+										enabled: true
+									}, {
+										label: 'Medio Día',
+										time: '12:45 PM',
+										enabled: false
+									}, {
+										label: 'Tarde',
+										time: '6:45 PM',
+										enabled: false
+									}]
+								}, {
+									name: 'Viernes',
+									alarms: [{
+										label: 'Mañana',
+										time: '8:00 AM',
+										enabled: true
+									}, {
+										label: 'Medio Día',
+										time: '1:00 PM',
+										enabled: false
+									}, {
+										label: 'Tarde',
+										time: '7:00 PM',
+										enabled: true
+									}]
+								}, {
+									name: 'Sábado',
+									alarms: [{
+										label: 'Mañana',
+										time: '9:00 AM',
+										enabled: false
+									}, {
+										label: 'Medio Día',
+										time: '1:30 PM',
+										enabled: true
+									}, {
+										label: 'Tarde',
+										time: '7:30 PM',
+										enabled: true
+									}]
+								}, {
+									name: 'Domingo',
+									alarms: [{
+										label: 'Mañana',
+										time: '9:30 AM',
+										enabled: true
+									}, {
+										label: 'Medio Día',
+										time: '2:00 PM',
+										enabled: false
+									}, {
+										label: 'Tarde',
+										time: '8:00 PM',
+										enabled: true
+									}]
+								}]
+							}
+						}, {
+							title: 'Crear Alarma',
+							layout: 'full',
+							component: NewAlarmFormComponent,
+							data: {
+								days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+							},
+							on: {
+								create: 'handleCreateAlarm',
+								cancel: 'handleCancelAlarm'
+							}
+						}]
+					};
+				},
+				computed: {
+					currentCard() {
+						return this.cards[this.currentIndex];
+					}
+				},
+				methods: {
+					nextCard() {
+						if (this.currentIndex < this.cards.length - 1) {
+							this.currentIndex++;
+						}
+					},
+					prevCard() {
+						if (this.currentIndex > 0) {
+							this.currentIndex--;
+						}
+					},
+					goHome() {
+						this.currentIndex = 0;
+					},
+					navigateToCard(index) {
+						if (index >= 0 && index < this.cards.length) {
+							this.currentIndex = index;
+						} else {
+							showToast(`No existe la tarjeta con índice ${index + 1}`);
+							console.warn(`Índice fuera de rango: ${index}`);
+						}
+					},
+					handleCreate(payload) {
+						showToast(`Create event received: ${JSON.stringify(payload)}`);
+					},
+					
+					handleCancel() {
+						showToast('Cancelled');
+					},
+					getComponentListeners() {
+						return {
+							create: this.handleCreate,
+							cancel: this.handleCancel,
+							navigate: this.navigateToCard
+						};
+					}
+				}
+			});
+			app.mount('#app');
+		</script>
+		<div id="toast" class="toast"></div>
+	</body>
 </html>
