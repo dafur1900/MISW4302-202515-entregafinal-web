@@ -117,7 +117,7 @@
   },
   methods: {
     onError() {
-      this.imgSrc = 'fallback.png'; // fallback image
+      this.imgSrc = 'assets/fallback.png'; // fallback image
     }
   }
 };
@@ -148,7 +148,7 @@
 					};
 				},
 				methods: {
-					onError() { this.imgSrc = 'fallback.png'; },
+					onError() { this.imgSrc = 'assets/fallback.png'; },
 					buttonClicked() { showToast('Descargar!!!'); },
 					goToCard(index) { this.$emit('navigate', index); },
 					handleClick(index) {
@@ -170,7 +170,7 @@
 				},
 				methods: {
 					onError() {
-						this.imgSrc = 'fallback.png'; // Or any default/fallback image
+						this.imgSrc = 'assets/fallback.png'; // Or any default/fallback image
 					}
 				}
 			};
@@ -331,7 +331,7 @@
 				data() {
 					return {
 					internalAlarms: JSON.parse(JSON.stringify(this.data.alarms)),
-					imgSrc: this.data.imgSrc || 'default-icon.png' // fallback if not provided
+					imgSrc: this.data.imgSrc || 'assets/default-icon.png' // fallback if not provided
 					};
 				},
 				template: `
@@ -500,7 +500,7 @@
 							},
 							data: {
 								left: {
-									src: 'background.png',
+									src: 'assets/background.png',
 									maxWidth: '100%'
 								},
 								right: {}
@@ -515,7 +515,7 @@
 							},
 							data: {
 								left: {
-									src: 'background.png',
+									src: 'assets/background.png',
 									maxWidth: '100%'
 								},
 								right: {}
@@ -525,8 +525,8 @@
 							layout: 'full',
 							component: MarketplaceComponent,
 							data: {
-								topImage: 'mobile.png',
-								bottomLeftImage: 'googlePlay.png',
+								topImage: 'assets/mobile.png',
+								bottomLeftImage: 'assets/googlePlay.png',
 								bottomTitle: 'Descarga la App Mobile',
 								bottomDescription: `Para usar la plataforma, descarga la app mobile disponible en android
 	Si ya la tienes puedes ir a escanear el código qr para iniciar sesión.`
@@ -537,7 +537,7 @@
 							layout: 'full',
 							component: FullImageComponent,
 							data: {
-								src: 'QR.png',
+								src: 'assets/QR.png',
 								maxWidth: '50%'
 							}
 							//data: { src: 'https://via.placeholder.com/780x460?text=Full+Image' }
@@ -551,7 +551,7 @@
 							},
 							data: {
 								left: {
-									src: 'background.png',
+									src: 'assets/background.png',
 									caption: 'Left pane image'
 								},
 								right: {
@@ -568,7 +568,7 @@
 							},
 							data: {
 								left: {
-									src: 'background.png',
+									src: 'assets/background.png',
 									caption: 'Left pane image'
 								},
 								right: {
@@ -580,7 +580,7 @@
 							layout: 'full',
 							component: AlarmTableComponent,
 							data: {
-								imgSrc: 'plus50.png', // <--- Your floating button image
+								imgSrc: 'assets/plus50.png', // <--- Your floating button image
 								alarms:[{
 									name: 'Lunes',
 									alarms: [{
