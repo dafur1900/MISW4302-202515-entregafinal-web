@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Card Layout</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 40px;
+      background: #f0f0f0;
+    }
+
+    .card {
+      width: 800px;
+      height: 600px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Title/Menu Bar */
+    .card-header {
+      background: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 18px;
+    }
+
+    .card-header .title {
+      font-weight: bold;
+    }
+
+    .card-header .options {
+      font-size: 14px;
+    }
+
+    /* Content Area */
+    .card-content {
+      flex: 1;
+      display: flex;
+      padding: 20px;
+      gap: 20px;
+      background: #fafafa;
+    }
+
+    .content-full {
+      width: 100%;
+    }
+
+    .content-split {
+      display: flex;
+      width: 100%;
+      gap: 20px;
+    }
+
+    .left-pane {
+      width: 65%;
+      background: #e9f0ff;
+      padding: 15px;
+      border-radius: 6px;
+    }
+
+    .right-pane {
+      width: 35%;
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 6px;
+    }
+
+    /* Navigation buttons */
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      width: 800px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .counter {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="card">
+      <!-- Title Bar -->
+      <div class="card-header">
+        <div class="title">{{ currentCard.title }}</div>
+        <div class="options">{{ currentCard.options }}</div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="card-content">
+        <!-- Full-width mode -->
+        <div v-if="currentCard.layout === 'full'" class="content-full">
+          {{ currentCard.content }}
+        </div>
+
+        <!-- Split layout -->
+        <div v-else-if="currentCard.layout === 'split'" class="content-split">
+          <div class="left-pane">
+            {{ currentCard.left }}
+          </div>
+          <div class="right-pane">
+            {{ currentCard.right }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="buttons">
+      <button @click="prevCard" :disabled="currentIndex === 0">◀ Prev</button>
+      <button @click="nextCard" :disabled="currentIndex === cards.length - 1">Next ▶</button>
+    </div>
+
+    <div class="counter">
+      Card {{ currentIndex + 1 }} of {{ cards.length }}
+    </div>
+  </div>
+
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          currentIndex: 0,
+          cards: [
+            {
+              title: 'Dashboard',
+              options: 'Settings | Help',
+              layout: 'split',
+              left: 'Main graph or content goes here (65%)',
+              right: 'Controls, filters, or quick stats (35%)'
+            },
+            {
+              title: 'User Profile',
+              options: 'Edit | Logout',
+              layout: 'full',
+              content: 'This is the full-width content area for user profile.'
+            },
+            {
+              title: 'Analytics',
+              options: 'Refresh | Export',
+              layout: 'split',
+              left: 'Charts and tables on the left side.',
+              right: 'Options and filters on the right.'
+            }
+          ]
+        };
+      },
+      computed: {
+        currentCard() {
+          return this.cards[this.currentIndex];
+        }
+      },
+      methods: {
+        nextCard() {
+          if (this.currentIndex < this.cards.length - 1) {
+            this.currentIndex++;
+          }
+        },
+        prevCard() {
+          if (this.currentIndex > 0) {
+            this.currentIndex--;
+          }
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
