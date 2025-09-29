@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Card Layout</title>
+  <title>Interactive Cards UI</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
     body {
@@ -23,9 +23,9 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      transition: all 0.5s ease;
     }
 
-    /* Title/Menu Bar */
     .card-header {
       background: #2c3e50;
       color: white;
@@ -44,13 +44,13 @@
       font-size: 14px;
     }
 
-    /* Content Area */
     .card-content {
       flex: 1;
       display: flex;
       padding: 20px;
       gap: 20px;
       background: #fafafa;
+      overflow: auto;
     }
 
     .content-full {
@@ -68,6 +68,7 @@
       background: #e9f0ff;
       padding: 15px;
       border-radius: 6px;
+      overflow: auto;
     }
 
     .right-pane {
@@ -75,9 +76,9 @@
       background: #fff3cd;
       padding: 15px;
       border-radius: 6px;
+      overflow: auto;
     }
 
-    /* Navigation buttons */
     .buttons {
       margin-top: 20px;
       display: flex;
@@ -105,37 +106,121 @@
       font-size: 14px;
       color: #666;
     }
+
+    /* Form Controls */
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #007bff;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    img.full-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 6px;
+    }
+
+    /* Simple fade animation for transitions */
+    .fade-enter-active, .fade-leave-active {
+      transition: opacity 0.4s ease;
+    }
+    .fade-enter-from, .fade-leave-to {
+      opacity: 0;
+    }
   </style>
 </head>
 <body>
   <div id="app">
-    <div class="card">
-      <!-- Title Bar -->
-      <div class="card-header">
-        <div class="title">{{ currentCard.title }}</div>
-        <div class="options">{{ currentCard.options }}</div>
-      </div>
-
-      <!-- Content Area -->
-      <div class="card-content">
-        <!-- Full-width mode -->
-        <div v-if="currentCard.layout === 'full'" class="content-full">
-          {{ currentCard.content }}
+    <transition name="fade" mode="out-in">
+      <div class="card" :key="currentIndex">
+        <div class="card-header">
+          <div class="title">{{ currentCard.title }}</div>
+          <div class="options">{{ currentCard.options }}</div>
         </div>
 
-        <!-- Split layout -->
-        <div v-else-if="currentCard.layout === 'split'" class="content-split">
-          <div class="left-pane">
-            {{ currentCard.left }}
+        <div class="card-content">
+          <!-- FULL Layout -->
+          <div v-if="currentCard.layout === 'full'" class="content-full">
+            <component :is="currentCard.component" :data="currentCard.data"></component>
           </div>
-          <div class="right-pane">
-            {{ currentCard.right }}
+
+          <!-- SPLIT Layout -->
+          <div v-else-if="currentCard.layout === 'split'" class="content-split">
+            <div class="left-pane">
+              <component :is="currentCard.component.left" :data="currentCard.data.left"></component>
+            </div>
+            <div class="right-pane">
+              <component :is="currentCard.component.right" :data="currentCard.data.right"></component>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </transition>
 
-    <!-- Navigation Buttons -->
     <div class="buttons">
       <button @click="prevCard" :disabled="currentIndex === 0">◀ Prev</button>
       <button @click="nextCard" :disabled="currentIndex === cards.length - 1">Next ▶</button>
@@ -147,30 +232,108 @@
   </div>
 
   <script>
-    Vue.createApp({
+    const FormExample = {
+      props: ['data'],
+      template: `
+        <div>
+          <h3>Form Example</h3>
+          <input type="text" placeholder="Enter name" />
+          <textarea placeholder="Enter description"></textarea>
+          <label class="switch">
+            <input type="checkbox" v-model="checked">
+            <span class="slider"></span>
+          </label> Toggle: {{ checked ? 'On' : 'Off' }}<br><br>
+          <button @click="alertClicked">Submit</button>
+        </div>
+      `,
+      data() {
+        return {
+          checked: false
+        };
+      },
+      methods: {
+        alertClicked() {
+          alert('Submitted!');
+        }
+      }
+    };
+
+    const TableExample = {
+      props: ['data'],
+      template: `
+        <div>
+          <h3>Sample Table</h3>
+          <table>
+            <tr><th>Name</th><th>Age</th></tr>
+            <tr v-for="(item, i) in data" :key="i">
+              <td>{{ item.name }}</td>
+              <td>{{ item.age }}</td>
+            </tr>
+          </table>
+        </div>
+      `
+    };
+
+    const ImageFull = {
+      props: ['data'],
+      template: `<img class="full-img" :src="data.src" alt="Full Image" />`
+    };
+
+    const ImageSplit = {
+      props: ['data'],
+      template: `
+        <div>
+          <img class="full-img" :src="data.src" alt="Split Image" />
+          <p>{{ data.caption }}</p>
+        </div>
+      `
+    };
+
+    const app = Vue.createApp({
       data() {
         return {
           currentIndex: 0,
           cards: [
             {
-              title: 'Dashboard',
-              options: 'Settings | Help',
-              layout: 'split',
-              left: 'Main graph or content goes here (65%)',
-              right: 'Controls, filters, or quick stats (35%)'
-            },
-            {
-              title: 'User Profile',
-              options: 'Edit | Logout',
+              title: 'Welcome',
+              options: 'Start',
               layout: 'full',
-              content: 'This is the full-width content area for user profile.'
+              component: FormExample,
+              data: {}
             },
             {
-              title: 'Analytics',
-              options: 'Refresh | Export',
+              title: 'Table Example',
+              options: 'Export',
+              layout: 'full',
+              component: TableExample,
+              data: [
+                { name: 'Alice', age: 25 },
+                { name: 'Bob', age: 30 },
+                { name: 'Charlie', age: 35 }
+              ]
+            },
+            {
+              title: 'Image Full Layout',
+              options: 'View',
+              layout: 'full',
+              component: ImageFull,
+              data: { src: 'https://via.placeholder.com/780x460?text=Full+Image' }
+            },
+            {
+              title: 'Split Layout',
+              options: 'Toggle',
               layout: 'split',
-              left: 'Charts and tables on the left side.',
-              right: 'Options and filters on the right.'
+              component: {
+                left: ImageSplit,
+                right: FormExample
+              },
+              data: {
+                left: {
+                  src: 'https://via.placeholder.com/400x300?text=Split+Image',
+                  caption: 'This image is in the left pane.'
+                },
+                right: {}
+              }
             }
           ]
         };
@@ -192,7 +355,9 @@
           }
         }
       }
-    }).mount('#app');
+    });
+
+    app.mount('#app');
   </script>
 </body>
 </html>
