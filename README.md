@@ -19,15 +19,16 @@ De esta forma, Alarm Challenge no solo busca que el usuario apague una alarma, s
 ## 📁 Estructura del Proyecto
 
 📦 AlarmChallenge/
-│
-├── 📄 index.html # Archivo principal de la aplicación
-├── 🎨 style.css # Estilos personalizados para el layout y componentes
-├── 🖼️ assets/ # Carpeta con imágenes como fondos, botones, QR, etc.
-│ ├── background.png
-│ ├── mobile.png
-│ ├── googlePlay.png
-│ ├── QR.png
-│ └── plus50.png
+|
+|-- 📄 index.html # Archivo principal de la aplicación
+|
+|-- 🎨 style.css # Estilos personalizados para el layout y componentes
+|-- 🖼️ assets/ # Carpeta con imágenes como fondos, botones, QR, etc.
+| |-- background.png
+| |-- mobile.png
+| |-- googlePlay.png
+| |-- QR.png
+| |-- plus50.png
 
 ---
 
@@ -77,12 +78,3 @@ De esta forma, Alarm Challenge no solo busca que el usuario apague una alarma, s
 ## 🤝 Agradecimientos
 
 Este proyecto fue desarrollado como una prueba de concepto para explorar nuevas formas de despertar a través de una experiencia más interactiva y significativa.
-
----
-
-## 📬 Contacto
-
-¿Tienes sugerencias o ideas? ¡Estoy abierto a colaboraciones!
-
----
-
