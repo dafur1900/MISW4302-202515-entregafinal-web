@@ -1,308 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Interactive Cards UI</title>
+  <meta charset="UTF-8" />
+  <title>Vue Card UI</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 40px;
-      background: #f0f0f0;
-    }
-
-    .card {
-      width: 800px;
-      height: 600px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: all 0.5s ease;
-    }
-
-    .card-header {
-      background: #2c3e50;
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 18px;
-    }
-
-    .card-header .title {
-      font-weight: bold;
-    }
-
-    .card-header .options {
-      font-size: 14px;
-    }
-
-    .card-content {
-      flex: 1;
-      display: flex;
-      padding: 20px;
-      gap: 20px;
-      background: #fafafa;
-      overflow: auto;
-    }
-
-    .content-full {
-      width: 100%;
-    }
-
-    .content-split {
-      display: flex;
-      width: 100%;
-      gap: 20px;
-    }
-
-    .left-pane {
-      width: 65%;
-      background: #e9f0ff;
-      padding: 15px;
-      border-radius: 6px;
-      overflow: auto;
-    }
-
-    .right-pane {
-      width: 35%;
-      background: #fff3cd;
-      padding: 15px;
-      border-radius: 6px;
-      overflow: auto;
-    }
-
-    .buttons {
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-      width: 800px;
-    }
-
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-
-    .counter {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #666;
-    }
-
-    /* Form Controls */
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-
-    /* Toggle Switch */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 26px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 26px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: #007bff;
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(24px);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-
-    th, td {
-      padding: 8px;
-      text-align: left;
-    }
-
-    img.full-img {
-      width: 100%;
-      height: auto;
-      display: block;
-      margin: 0 auto;
-      border-radius: 6px;
-    }
-
-    /* Simple fade animation for transitions */
-    .fade-enter-active, .fade-leave-active {
-      transition: opacity 0.4s ease;
-    }
-    .fade-enter-from, .fade-leave-to {
-      opacity: 0;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app">
     <transition name="fade" mode="out-in">
-      <div class="card" :key="currentIndex">
-        <div class="card-header">
-          <div class="title">{{ currentCard.title }}</div>
-          <div class="options">{{ currentCard.options }}</div>
-        </div>
-
-        <div class="card-content">
-          <!-- FULL Layout -->
-          <div v-if="currentCard.layout === 'full'" class="content-full">
-            <component :is="currentCard.component" :data="currentCard.data"></component>
-          </div>
-
-          <!-- SPLIT Layout -->
-          <div v-else-if="currentCard.layout === 'split'" class="content-split">
-            <div class="left-pane">
-              <component :is="currentCard.component.left" :data="currentCard.data.left"></component>
-            </div>
-            <div class="right-pane">
-              <component :is="currentCard.component.right" :data="currentCard.data.right"></component>
-            </div>
-          </div>
-        </div>
-      </div>
+      <card-wrapper :key="currentIndex" :card="currentCard"></card-wrapper>
     </transition>
 
     <div class="buttons">
       <button @click="prevCard" :disabled="currentIndex === 0">◀ Prev</button>
       <button @click="nextCard" :disabled="currentIndex === cards.length - 1">Next ▶</button>
     </div>
-
     <div class="counter">
       Card {{ currentIndex + 1 }} of {{ cards.length }}
     </div>
   </div>
 
-  <script>
-    const FormExample = {
-      props: ['data'],
-      template: `
-        <div>
-          <h3>Form Example</h3>
-          <input type="text" placeholder="Enter name" />
-          <textarea placeholder="Enter description"></textarea>
-          <label class="switch">
-            <input type="checkbox" v-model="checked">
-            <span class="slider"></span>
-          </label> Toggle: {{ checked ? 'On' : 'Off' }}<br><br>
-          <button @click="alertClicked">Submit</button>
-        </div>
-      `,
-      data() {
-        return {
-          checked: false
-        };
-      },
-      methods: {
-        alertClicked() {
-          alert('Submitted!');
-        }
-      }
-    };
+  <!-- Load components -->
+  <script type="module">
+	import { CardWrapper } from './components/CardWrapper.js';
+    import { FormExample } from './components/FormExample.js';
+    import { TableExample } from './components/TableExample.js';
+    import { ImageFull } from './components/ImageFull.js';
+    import { ImageSplit } from './components/ImageSplit.js';
+	import { LabeledInput } from './components/LabeledInput.js';
+	import { iPodForm } from './components/iPodForm.js';
 
-    const TableExample = {
-      props: ['data'],
-      template: `
-        <div>
-          <h3>Sample Table</h3>
-          <table>
-            <tr><th>Name</th><th>Age</th></tr>
-            <tr v-for="(item, i) in data" :key="i">
-              <td>{{ item.name }}</td>
-              <td>{{ item.age }}</td>
-            </tr>
-          </table>
-        </div>
-      `
-    };
-
-    const ImageFull = {
-      props: ['data'],
-      template: `<img class="full-img" :src="data.src" alt="Full Image" />`
-    };
-
-    const ImageSplit = {
-      props: ['data'],
-      template: `
-        <div>
-          <img class="full-img" :src="data.src" alt="Split Image" />
-          <p>{{ data.caption }}</p>
-        </div>
-      `
-    };
 
     const app = Vue.createApp({
+      components: {
+        CardWrapper
+      },
       data() {
         return {
           currentIndex: 0,
           cards: [
             {
-              title: 'Welcome',
-              options: 'Start',
+              title: 'Form Card',
+              options: 'Edit | Save',
               layout: 'full',
               component: FormExample,
               data: {}
             },
             {
-              title: 'Table Example',
+              title: 'Table Card',
               options: 'Export',
               layout: 'full',
               component: TableExample,
@@ -313,15 +59,15 @@
               ]
             },
             {
-              title: 'Image Full Layout',
-              options: 'View',
+              title: 'Full Image Card',
+              options: '',
               layout: 'full',
               component: ImageFull,
-              data: { src: 'https://via.placeholder.com/780x460?text=Full+Image' }
+			  data: { src: './resources/QR.png' }
             },
             {
-              title: 'Split Layout',
-              options: 'Toggle',
+              title: 'Split Image + Form',
+              options: 'View | Fill',
               layout: 'split',
               component: {
                 left: ImageSplit,
@@ -330,11 +76,24 @@
               data: {
                 left: {
                   src: 'https://via.placeholder.com/400x300?text=Split+Image',
-                  caption: 'This image is in the left pane.'
+                  caption: 'Left pane image'
                 },
                 right: {}
               }
-            }
+            },
+			{
+				title: 'iPod Form Card',
+				options: 'Submit',
+				layout: 'split',
+				component: {
+					left: ImageFull,
+					right: iPodForm
+				},
+				data: {
+					left: { src: 'https://via.placeholder.com/400x300?text=iPod+Form+Image' },
+					right: {}
+				}
+			}
           ]
         };
       },
@@ -345,14 +104,10 @@
       },
       methods: {
         nextCard() {
-          if (this.currentIndex < this.cards.length - 1) {
-            this.currentIndex++;
-          }
+          if (this.currentIndex < this.cards.length - 1) this.currentIndex++;
         },
         prevCard() {
-          if (this.currentIndex > 0) {
-            this.currentIndex--;
-          }
+          if (this.currentIndex > 0) this.currentIndex--;
         }
       }
     });
