@@ -18,13 +18,25 @@
 							<i class="material-icons icon-inline">access_time</i>
 							<span>{{ globalHeaderText }}</span>
 						</div>
-						<div 
-							class="header-right"
-							:class="{ 'clickable-title': currentCard.titleLink !== undefined }"
-							@click="navigateIfLinked"
-						>
-							<!--<i class="material-icons icon-inline">more_vert</i> -->
-							{{ currentCard.title }}
+						<div class="header-right">
+							<span 
+								v-for="(item, index) in currentCard.rightItems" 
+								:key="index"
+								:class="{ 'clickable-title': item.link !== undefined }"
+								@click="item.link !== undefined && navigateToCard(item.link)"
+							>
+								{{ item.text }}
+							</span>
+							
+							<!-- separator except for last item -->
+							<template v-if="currentCard.rightItems.length > 1">
+								<span v-for="(item, idx) in currentCard.rightItems" 
+									v-if="idx < currentCard.rightItems.length - 1" 
+									:key="'sep-' + idx"
+									class="header-separator">
+								<i class="material-icons icon-inline">more_vert</i>
+								</span>
+							</template>
 						</div>
 						
 					</div>
@@ -35,6 +47,7 @@
 							<component
 								:is="currentCard.component"
 								:data="currentCard.data"
+								:prev-index="currentIndex > 0 ? currentIndex - 1 : 0"
 								v-on="getComponentListeners()"
 							/>
 						</div>
@@ -54,13 +67,13 @@
 					</div>
 				</div>
 			</transition>
-			<div class="buttons">
+			<!--<div class="buttons">
 				<button class="btn btn-success btn-rounded-md" @click="prevCard" :disabled="currentIndex === 0">Anterior</button>
 				<button class="btn btn-success btn-rounded-md btn-home" v-if="currentIndex !== 0" @click="goHome">Inicio</button>
 				<button class="btn btn-success btn-rounded-md" @click="nextCard" :disabled="currentIndex === cards.length - 1">Siguiente</button>
 			</div>
 			<div class="counter"> Card {{ currentIndex + 1 }} of {{ cards.length }}
-			</div>
+			</div>-->
 		</div>
 		<script>
 			window.CARD_INDEX = {
@@ -142,7 +155,7 @@
 								</div>
 								<div class="description">{{ data.bottomDescription }}</div>
 								<!-- New Button -->
-								<button class="btn btn-main" @click="handleClick(2)">Descargar Ahora</button>
+								<button class="btn btn-main" @click="goToCard(3)">Ir a escanear código QR</button>
 							</div>
 						</div>`,
 				props: ['data'],
@@ -280,7 +293,7 @@
 						<div class="Welcome-form">
 							<h2>Hemos enviado un código a tu celular, introdúcelo</h2>
 							<LabeledInputComponent label="Código" v-model="form.phone_code" />
-							<button class="btn btn-main" @click="goToCard(6)">Confirmar</button>
+							<button class="btn btn-main" @click="goToCard(2)">Confirmar</button>
 							<div class="description">{{ data.description }}</div>
 						</div>`,
 				methods: {
@@ -489,7 +502,7 @@
   `
 			};
 			const InfoCardComponent = {
-				props: ['data'],
+				props: ['data', '0'],  // <-- add prevIndex prop
 				data() {
 					return {
 					showModal: false
@@ -497,52 +510,49 @@
 				},
 				methods: {
 					openModal() {
-					this.showModal = true;
+						this.showModal = true;
 					},
 					closeModal() {
-					this.showModal = false;
+						this.showModal = false;
 					},
 					handleButtonClick() {
-					if (this.data.buttonAction) {
-						this.data.buttonAction();
-					}
+						// Safeguard: ensure prevIndex is >= 0
+						const targetIndex = (this.prevIndex !== undefined && this.prevIndex >= 0) 
+											? this.prevIndex 
+											: 0; // fallback to home if prevIndex is invalid
+						this.$emit('navigate', targetIndex);
+					},
+					goToCard(index) {
+						this.$emit('navigate', index);
 					}
 				},
 				template: `
 					<div class="info-card">
-					<!-- Title -->
 					<h1 class="info-title">{{ data.title }}</h1>
-				
-					<!-- Centered paragraph text -->
 					<p class="info-text">{{ data.text }}</p>
-				
-					<!-- Image with click -->
 					<img :src="data.imgSrc" class="info-image" @click="openModal" alt="Info Image" />
-				
-					<!-- Centered button -->
 					<button class="btn btn-primary btn-rounded-md info-btn" @click="handleButtonClick">
 						{{ data.buttonText }}
 					</button>
-				
-					<!-- Modal -->
 					<div v-if="showModal" class="modal-overlay" @click.self="closeModal">
 						<div class="modal-content">
 						<h2 class="modal-title">{{ data.modalTitle }}</h2>
 						<p class="modal-description">{{ data.modalDescription }}</p>
-						<button class="btn btn-main" @click="closeModal">Close</button>
+						<button class="btn btn-primary btn-rounded-md" @click="goToCard(6)">Aceptar</button>
 						</div>
 					</div>
 					</div>
 				`
-				};
+			};
 			const app = Vue.createApp({
 				data() {
 					return {
 						currentIndex: 0,
 						globalHeaderText: 'Alarm Challenge',
 						cards: [{
-							title: 'Inicia sesión',
-							titleLink: 3,
+							rightItems: [
+								{ text: 'Inicia sesión', link: 3 }
+							],
 							options: 'View | Fill',
 							layout: 'split',
 							component: {
@@ -557,8 +567,10 @@
 								right: {}
 							}
 						}, {
-							title: 'Inicia sesión',
-							titleLink: 3,
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 },
+								{ text: 'Inicia sesión', link: 3 }
+							],
 							options: 'Submit',
 							layout: 'split',
 							component: {
@@ -573,8 +585,9 @@
 								right: {}
 							}
 						}, {
-							title: 'Volver a inicio',
-							titleLink: 0,
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 }
+							],
 							layout: 'full',
 							component: MarketplaceComponent,
 							data: {
@@ -585,7 +598,9 @@
 	Si ya la tienes puedes ir a escanear el código qr para iniciar sesión.`
 							}
 						}, {
-							title: 'QR enlace celular',
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 }
+							],
 							layout: 'full',
 							component: InfoCardComponent,
 							data: {
@@ -597,7 +612,10 @@
 								modalDescription: "Dispositivo vinculado exitosamente"
 							}
 						}, {
-							title: 'Registro celular',
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 },
+								{ text: 'Inicia sesión', link: 3 }
+							],
 							options: 'View | Fill',
 							layout: 'split',
 							component: {
@@ -614,7 +632,10 @@
 								}
 							}
 						}, {
-							title: 'Registro celular',
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 },
+								{ text: 'Inicia sesión', link: 3 }
+							],
 							options: 'View | Fill',
 							layout: 'split',
 							component: {
@@ -631,7 +652,9 @@
 								}
 							}
 						}, {
-							title: 'Alarmas por Día',
+							rightItems: [
+								{ text: 'Cerrar sesión', link: 3}
+							],
 							layout: 'full',
 							component: AlarmTableComponent,
 							data: {
@@ -744,7 +767,9 @@
 								}]
 							}
 						}, {
-							title: 'Crear Alarma',
+							rightItems: [
+								{ text: 'Crear Alarma'}
+							],
 							layout: 'full',
 							component: NewAlarmFormComponent,
 							data: {

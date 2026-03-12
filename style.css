@@ -60,6 +60,19 @@ body {
   cursor: pointer;
 }
 
+.header-right span {
+  margin: 0 4px;          /* space around text */
+  cursor: pointer;
+}
+
+.header-separator {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 6px;
+  color: #333;            /* optional: color for the icon */
+  font-size: 16px;        /* match your text size */
+}
+
 
 /* =======================================================
    4. CARD CONTENT LAYOUT
