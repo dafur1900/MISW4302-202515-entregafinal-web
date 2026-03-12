@@ -19,9 +19,26 @@
 							<span>{{ globalHeaderText }}</span>
 						</div>
 						<div class="header-right">
-							<i class="material-icons icon-inline">more_vert</i>
-							{{ currentCard.title }}
+							<span 
+								v-for="(item, index) in currentCard.rightItems" 
+								:key="index"
+								:class="{ 'clickable-title': item.link !== undefined }"
+								@click="item.link !== undefined && navigateToCard(item.link)"
+							>
+								{{ item.text }}
+							</span>
+							
+							<!-- separator except for last item -->
+							<template v-if="currentCard.rightItems.length > 1">
+								<span v-for="(item, idx) in currentCard.rightItems" 
+									v-if="idx < currentCard.rightItems.length - 1" 
+									:key="'sep-' + idx"
+									class="header-separator">
+								<i class="material-icons icon-inline">more_vert</i>
+								</span>
+							</template>
 						</div>
+						
 					</div>
 					<div class="card-content">
 						<!-- FULL Layout -->
@@ -30,6 +47,7 @@
 							<component
 								:is="currentCard.component"
 								:data="currentCard.data"
+								:prev-index="currentIndex > 0 ? currentIndex - 1 : 0"
 								v-on="getComponentListeners()"
 							/>
 						</div>
@@ -49,13 +67,13 @@
 					</div>
 				</div>
 			</transition>
-			<div class="buttons">
+			<!--<div class="buttons">
 				<button class="btn btn-success btn-rounded-md" @click="prevCard" :disabled="currentIndex === 0">Anterior</button>
 				<button class="btn btn-success btn-rounded-md btn-home" v-if="currentIndex !== 0" @click="goHome">Inicio</button>
 				<button class="btn btn-success btn-rounded-md" @click="nextCard" :disabled="currentIndex === cards.length - 1">Siguiente</button>
 			</div>
 			<div class="counter"> Card {{ currentIndex + 1 }} of {{ cards.length }}
-			</div>
+			</div>-->
 		</div>
 		<script>
 			window.CARD_INDEX = {
@@ -82,10 +100,10 @@
 				template: `
 						
 						<div class="Welcome-form">
-							<h3>¡Bienvenido!</h3>
+							<h1>¡Bienvenido!</h1>
 							<div class="button-group">
-								<button class="btn btn-primary btn-rounded-md" @click="goToCard(1)">Regístrate</button>
-								<button class="btn btn-primary btn-rounded-md" @click="goToCard(4)">Continuar como usuario anónimo</button>
+								<button class="btn btn-main" @click="goToCard(1)">Regístrate</button>
+								<button class="btn btn-secondary btn-success  btn-rounded-md" @click="goToCard(4)">Continuar como usuario anónimo</button>
 							</div>
 						</div>`,
 				methods: {
@@ -101,9 +119,8 @@
   template: `
     <div class="image-container">
       <img 
-        class="full-img" 
-        :src="imgSrc" 
-        :style="{ maxWidth: data.maxWidth || '200px', height: 'auto' }" 
+        class="full-img full-opacity dynamic-img" 
+        :src="imgSrc"
         @error="onError" 
         alt="Image" 
       />
@@ -138,7 +155,7 @@
 								</div>
 								<div class="description">{{ data.bottomDescription }}</div>
 								<!-- New Button -->
-								<button class="btn btn-primary btn-rounded-md" @click="handleClick(2)">Descargar Ahora</button>
+								<button class="btn btn-main" @click="goToCard(3)">Ir a escanear código QR</button>
 							</div>
 						</div>`,
 				props: ['data'],
@@ -209,12 +226,15 @@
 				template: `
 						
 						<div class="signin-form">
+							<h2 class="form-title">Crea una cuenta</h2>
 							<LabeledInputComponent label="Nombre" v-model="form.name" />
 							<LabeledInputComponent label="Email" v-model="form.email" />
 							<LabeledInputComponent label="Número telefónico" v-model="form.phone" />
 							<LabeledInputComponent label="Contraseña" v-model="form.password" type="password" />
 							<LabeledInputComponent label="Confirmar contraseña" v-model="form.password2" type="password" />
-							<button class="btn btn-primary btn-rounded-md" @click="submit">Crear cuenta</button>
+							<div class="button-group">
+								<button class="btn btn-main" @click="goToCard(2)">Crear cuenta</button>
+							</div>
 						</div>`,
 				methods: {
 					submit() {
@@ -242,8 +262,10 @@
 						<div class="Welcome-form">
 							<h3>Ingresa tu número</h3>
 							<LabeledInputComponent label="Número telefónico" v-model="form.phone" />
-							<button class="btn btn-primary btn-rounded-md" @click="goToCard(5)">Siguiente</button>
-							<div class="description">{{ data.description }}</div>
+							<div class="button-group">
+								<button class="btn btn-main" @click="goToCard(5)">Siguiente</button>
+							</div>
+							<div class="description description-small-underline">{{ data.description }}</div>
 						</div>`,
 				methods: {
 					submit() {
@@ -271,7 +293,7 @@
 						<div class="Welcome-form">
 							<h2>Hemos enviado un código a tu celular, introdúcelo</h2>
 							<LabeledInputComponent label="Código" v-model="form.phone_code" />
-							<button class="btn btn-primary btn-rounded-md" @click="goToCard(6)">Confirmar</button>
+							<button class="btn btn-main" @click="goToCard(2)">Confirmar</button>
 							<div class="description">{{ data.description }}</div>
 						</div>`,
 				methods: {
@@ -335,42 +357,38 @@
 					};
 				},
 				template: `
-					<div class="alarm-table" style="position: relative;">
+					<div class="alarm-table">
+					<div class="alarm-table-container">
 					<table>
 						<thead>
 						<tr>
 							<th>Día</th>
-							<th v-for="(col, colIndex) in 3" :key="'head-' + colIndex">Alarma {{ col }}</th>
+							<th v-for="(col, colIndex) in 6" :key="'head-' + colIndex">Alarma {{ col }}</th>
 						</tr>
 						</thead>
 						<tbody>
 						<tr v-for="(day, rowIndex) in internalAlarms" :key="'row-' + rowIndex">
 							<td class="day-label">
-							<span class="day-initial">{{ day.name[0] }}</span>
+								<span class="day-initial">{{ day.name[0] }}</span>
 							</td>
-							<td v-for="(alarm, alarmIndex) in day.alarms" :key="'cell-' + alarmIndex">
-							<div class="alarm-cell-horizontal">
-								<div class="alarm-info">
-								<div class="alarm-label">{{ alarm.label }}</div>
-								<div class="alarm-time">{{ alarm.time }}</div>
+							<td v-for="alarmIndex in 6" :key="'cell-' + alarmIndex">
+								<div v-if="day.alarms[alarmIndex-1]" class="alarm-cell-horizontal">
+									<div class="alarm-info">
+										<div class="alarm-label">{{ day.alarms[alarmIndex-1].label }}</div>
+										<div class="alarm-time">{{ day.alarms[alarmIndex-1].time }}</div>
+									</div>
+									<div class="alarm-toggle">
+										<label class="switch">
+											<input type="checkbox" v-model="day.alarms[alarmIndex-1].enabled" />
+											<span class="slider"></span>
+										</label>
+									</div>
 								</div>
-								<div class="alarm-toggle">
-								<label class="switch">
-									<input type="checkbox" v-model="alarm.enabled" />
-									<span class="slider"></span>
-								</label>
-								</div>
-							</div>
 							</td>
 						</tr>
 						</tbody>
 					</table>
-				
-					<!-- Floating Button -->
-					<button class="floating-btn" @click="goToCard(7)">
-						<img :src="imgSrc" alt="Floating Button" />
-					</button>
-					</div>
+				</div>
 				`,
 				methods: {
 					onFloatingBtnClick() {
@@ -381,8 +399,6 @@
 					}
 				}
 			};
-
-
 			const NewAlarmFormComponent = {
 				props: {
 					days: {
@@ -431,7 +447,7 @@
 							<h3>Crear Nueva Alarma</h3>
 							<div class="form-group input">
 								<label>Nombre de la alarma</label>
-								<input type="text" v-model="form.name" placeholder="Ej: Mañana" />
+								<input class="form-input" type="text" v-model="form.name" placeholder="Ej: Mañana" />
 							</div>
 							<div class="form-group day-selector">
 								<label>Días de la semana</label>
@@ -485,13 +501,58 @@
 						</div>
   `
 			};
+			const InfoCardComponent = {
+				props: ['data', '0'],  // <-- add prevIndex prop
+				data() {
+					return {
+					showModal: false
+					};
+				},
+				methods: {
+					openModal() {
+						this.showModal = true;
+					},
+					closeModal() {
+						this.showModal = false;
+					},
+					handleButtonClick() {
+						// Safeguard: ensure prevIndex is >= 0
+						const targetIndex = (this.prevIndex !== undefined && this.prevIndex >= 0) 
+											? this.prevIndex 
+											: 0; // fallback to home if prevIndex is invalid
+						this.$emit('navigate', targetIndex);
+					},
+					goToCard(index) {
+						this.$emit('navigate', index);
+					}
+				},
+				template: `
+					<div class="info-card">
+					<h1 class="info-title">{{ data.title }}</h1>
+					<p class="info-text">{{ data.text }}</p>
+					<img :src="data.imgSrc" class="info-image" @click="openModal" alt="Info Image" />
+					<button class="btn btn-primary btn-rounded-md info-btn" @click="handleButtonClick">
+						{{ data.buttonText }}
+					</button>
+					<div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+						<div class="modal-content">
+						<h2 class="modal-title">{{ data.modalTitle }}</h2>
+						<p class="modal-description">{{ data.modalDescription }}</p>
+						<button class="btn btn-primary btn-rounded-md" @click="goToCard(6)">Aceptar</button>
+						</div>
+					</div>
+					</div>
+				`
+			};
 			const app = Vue.createApp({
 				data() {
 					return {
 						currentIndex: 0,
 						globalHeaderText: 'Alarm Challenge',
 						cards: [{
-							title: 'Inicio',
+							rightItems: [
+								{ text: 'Inicia sesión', link: 3 }
+							],
 							options: 'View | Fill',
 							layout: 'split',
 							component: {
@@ -506,11 +567,14 @@
 								right: {}
 							}
 						}, {
-							title: 'Registro',
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 },
+								{ text: 'Inicia sesión', link: 3 }
+							],
 							options: 'Submit',
 							layout: 'split',
 							component: {
-								left: FullImageComponent,
+								left: LeftImageComponent,
 								right: SignInFormComponent
 							},
 							data: {
@@ -521,7 +585,9 @@
 								right: {}
 							}
 						}, {
-							title: 'Descarga la App',
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 }
+							],
 							layout: 'full',
 							component: MarketplaceComponent,
 							data: {
@@ -532,17 +598,24 @@
 	Si ya la tienes puedes ir a escanear el código qr para iniciar sesión.`
 							}
 						}, {
-							title: 'Image Full Layout',
-							options: 'View',
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 }
+							],
 							layout: 'full',
-							component: FullImageComponent,
+							component: InfoCardComponent,
 							data: {
-								src: 'assets/QR.png',
-								maxWidth: '50%'
+								title: "Escanear código QR",
+								text: "Escanea con tu camara el siguiente QR",
+								imgSrc: "assets/QR.png",
+								buttonText: "Volver",
+								modalTitle: "Ingreso exitoso!",
+								modalDescription: "Dispositivo vinculado exitosamente"
 							}
-							//data: { src: 'https://via.placeholder.com/780x460?text=Full+Image' }
 						}, {
-							title: 'Registro celular',
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 },
+								{ text: 'Inicia sesión', link: 3 }
+							],
 							options: 'View | Fill',
 							layout: 'split',
 							component: {
@@ -559,7 +632,10 @@
 								}
 							}
 						}, {
-							title: 'Registro celular',
+							rightItems: [
+								{ text: 'Volver a inicio', link: 0 },
+								{ text: 'Inicia sesión', link: 3 }
+							],
 							options: 'View | Fill',
 							layout: 'split',
 							component: {
@@ -576,7 +652,9 @@
 								}
 							}
 						}, {
-							title: 'Alarmas por Día',
+							rightItems: [
+								{ text: 'Cerrar sesión', link: 3}
+							],
 							layout: 'full',
 							component: AlarmTableComponent,
 							data: {
@@ -689,7 +767,9 @@
 								}]
 							}
 						}, {
-							title: 'Crear Alarma',
+							rightItems: [
+								{ text: 'Crear Alarma'}
+							],
 							layout: 'full',
 							component: NewAlarmFormComponent,
 							data: {
@@ -720,6 +800,11 @@
 					},
 					goHome() {
 						this.currentIndex = 0;
+					},
+					navigateIfLinked() {
+						if (this.currentCard.titleLink !== undefined) {
+							this.navigateToCard(this.currentCard.titleLink);
+						}
 					},
 					navigateToCard(index) {
 						if (index >= 0 && index < this.cards.length) {

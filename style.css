@@ -1,6 +1,7 @@
 /* =======================================================
-   Global Layout & Typography
+   1. GLOBAL LAYOUT & TYPOGRAPHY
 ======================================================= */
+
 body {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: flex;
@@ -10,12 +11,14 @@ body {
   background: #f0f0f0;
 }
 
+
 /* =======================================================
-   Layout: Card Container & Structure
+   2. MAIN CARD CONTAINER
 ======================================================= */
+
 .card {
   width: 800px;
-  height: 600px;
+  height: 545px;
   max-height: 90vh;
   background: white;
   border-radius: 8px;
@@ -26,9 +29,11 @@ body {
   transition: all 0.5s ease;
 }
 
+
 /* =======================================================
-   Header Strip
+   3. CARD HEADER
 ======================================================= */
+
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -47,13 +52,36 @@ body {
   gap: 18px;
 }
 
+.header-right {
+  font-size: 12px;
+}
+
+.clickable-title {
+  cursor: pointer;
+}
+
+.header-right span {
+  margin: 0 4px;          /* space around text */
+  cursor: pointer;
+}
+
+.header-separator {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 6px;
+  color: #333;            /* optional: color for the icon */
+  font-size: 16px;        /* match your text size */
+}
+
+
 /* =======================================================
-   Content Layouts
+   4. CARD CONTENT LAYOUT
 ======================================================= */
+
 .card-content {
   flex: 1;
   display: flex;
-  padding: 20px;
+  padding: 0;
   gap: 20px;
   background: #fdfde4;
   overflow: auto;
@@ -71,31 +99,37 @@ body {
 
 .left-pane,
 .right-pane {
-  padding: 15px;
-  border-radius: 6px;
+  border-radius: 1px;
   overflow: auto;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+  background: #fdfde4;
 }
 
 .left-pane {
   width: 65%;
-  background: #e9f0ff;
 }
 
 .right-pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
   width: 35%;
-  background: #fff3cd;
+  overflow: auto;
 }
 
+
 /* =======================================================
-   Buttons (Reusable)
+   5. BUTTON SYSTEM
 ======================================================= */
+
 .btn {
   display: inline-block;
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 500;
-  color: white;
+  color: black;
   border: none;
   cursor: pointer;
   border-radius: 6px;
@@ -106,21 +140,25 @@ button.btn {
   min-height: 38px;
 }
 
-
 .btn:focus {
   outline: 2px solid #007bff;
   outline-offset: 2px;
 }
 
-/* Default hover for all buttons (can be overridden) */
 .btn:not(:disabled):hover {
   filter: brightness(90%);
 }
 
-/* Button Colors */
+/* Button colors */
+
 .btn-primary,
 .btn-success {
   background-color: #52eb0e;
+}
+
+/* FIXED TYPO (missing dot before btn-secondary) */
+.btn-secondary {
+  background-color: #a5ed85;
 }
 
 .btn-disabled,
@@ -130,26 +168,18 @@ button.btn {
   color: #fff;
 }
 
-/* Shape variants */
-.btn-rounded-sm {
-  border-radius: 4px;
-}
+/* Button shapes */
 
-.btn-rounded-md {
-  border-radius: 8px;
-}
+.btn-rounded-sm { border-radius: 4px; }
+.btn-rounded-md { border-radius: 8px; }
+.btn-rounded-lg { border-radius: 20px; }
+.btn-pill { border-radius: 999px; }
 
-.btn-rounded-lg {
-  border-radius: 20px;
-}
-
-.btn-pill {
-  border-radius: 999px;
-}
 
 /* =======================================================
-   Navigation Buttons (override base)
+   6. NAVIGATION CONTROLS
 ======================================================= */
+
 .buttons {
   margin-top: 20px;
   display: grid;
@@ -168,6 +198,11 @@ button.btn {
   justify-self: center;
 }
 
+.btn-main {
+  background-color: #52eb0e;
+  color: black;
+  border-radius: 8px;
+}
 
 .counter {
   margin-top: 10px;
@@ -175,9 +210,11 @@ button.btn {
   color: #666;
 }
 
+
 /* =======================================================
-   Forms & Inputs
+   7. FORMS & INPUTS
 ======================================================= */
+
 input,
 textarea {
   width: 100%;
@@ -209,17 +246,64 @@ textarea {
   box-sizing: border-box;
 }
 
-/* WelcomeForm buttons layout */
+.form-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* SignIn form inputs */
+.signin-form .labeled-input input {
+  width: 100%;
+  padding: 8px 14px;      /* more padding for larger click area */
+  font-size: 16px;          /* larger font */
+  border: 1px solid #ccc;   /* soft border */
+  border-radius: 8px;       /* rounded corners */
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.signin-form .labeled-input input:focus {
+  border-color: #52eb0e;   /* green highlight */
+  box-shadow: 0 0 5px rgba(82, 235, 14, 0.5);
+  outline: none;
+}
+
+/* Form title styling */
+.signin-form .form-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-align: center;
+  color: #333;
+}
+
+.signin-form .labeled-input {
+  margin-bottom: 4px; /* spacing between inputs */
+}
+
+/* =======================================================
+   8. WELCOME COMPONENT LAYOUT
+======================================================= */
+
 .Welcome-form {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  justify-content: center;
+  align-items: center;
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 .button-group button {
@@ -227,15 +311,17 @@ textarea {
   padding: 8px 12px;
 }
 
+
 /* =======================================================
-   Toggle Switch (Merged all variants)
+   9. TOGGLE SWITCH
 ======================================================= */
+
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px;   /* kept largest size */
-  height: 22px;  /* kept largest size */
-  margin-top: 6px; /* from largest variant */
+  width: 40px;
+  height: 22px;
+  margin-top: 6px;
 }
 
 .switch input {
@@ -273,9 +359,11 @@ textarea {
   transform: translateX(18px);
 }
 
+
 /* =======================================================
-   Day Selector Grid (used for AlarmForm)
+   10. DAY SELECTOR GRID
 ======================================================= */
+
 .day-selector {
   margin-bottom: 16px;
 }
@@ -300,38 +388,22 @@ textarea {
 }
 
 .day-cell.selected {
-  background-color: #c2e8cf; /* pale green */
+  background-color: #c2e8cf;
   border-color: #28a745;
   color: #155724;
 }
 
-/* =======================================================
-   Time Input
-======================================================= */
-.time-input {
-  width: 150px;
-}
 
 /* =======================================================
-   Alarm Related Styles
+   11. ALARM COMPONENTS
 ======================================================= */
+
 .alarm-cell {
   display: flex;
   flex-direction: column;
   gap: 4px;
   font-size: 14px;
   align-items: start;
-}
-
-.alarm-label {
-  font-weight: 600;
-  font-size: 14px;
-  color: #000;
-}
-
-.alarm-time {
-  font-size: 12px;
-  color: #777;
 }
 
 .alarm-row,
@@ -350,52 +422,25 @@ textarea {
   flex-direction: column;
 }
 
+.alarm-label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.alarm-time {
+  font-size: 12px;
+  color: #777;
+}
+
 .alarm-toggle {
   flex-shrink: 0;
-}
-/* Alarm Type Radio Buttons - horizontal layout */
-.alarm-type-group {
-  display: flex;
-  gap: 20px; /* space between options */
-  align-items: center; /* vertically center */
-  margin-bottom: 16px; /* spacing below the group */
-}
-
-.alarm-type-option {
-  display: flex;
-  align-items: center;
-  gap: 6px; /* space between radio and label */
-}
-
-.alarm-type-option label {
-  cursor: pointer;
-  font-size: 14px;
-  color: #333;
-}
-
-.volume-control {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* spacing between percentage, label, and slider */
-  font-size: 14px;
-}
-
-.volume-percent {
-  font-weight: 600;
-  min-width: 40px; /* keep layout stable */
-  text-align: right;
-  color: #52eb0e; /* green color */
-}
-
-.volume-control input[type="range"] {
-  flex-grow: 1;
-  min-width: 0;
 }
 
 
 /* =======================================================
-   AlarmForm Clean Style - Full Width, No Card Box
+   12. ALARM FORM
 ======================================================= */
+
 .alarm-form-card {
   display: flex;
   flex-direction: column;
@@ -403,98 +448,20 @@ textarea {
   height: 100%;
   padding: 20px 32px;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
 }
-
-.alarm-form-card h3 {
-  margin-bottom: 24px;
-  font-size: 1.5em;
-  font-weight: 600;
-  color: #333;
-  text-align: center;
-}
-
-.alarm-form-card .form-group {
-  margin-bottom: 16px;
-}
-
-.alarm-form-card .form-group input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-
-.alarm-form-card .form-group label {
-  font-weight: 900;
-  margin-bottom: 6px;
-  display: block;
-  color: #444;
-}
-
-
 
 .form-actions {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-top: 20px; /* optional spacing */
+  margin-top: 20px;
 }
 
 
 /* =======================================================
-   Time & Repeat Toggle Row in AlarmForm
+   13. TABLES
 ======================================================= */
-.time-repeat-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
 
-.time-repeat-row .time-picker {
-  flex: 1;
-}
-
-.time-repeat-row .time-picker input[type="time"] {
-  width: 70%;
-  border-radius: 6px; /* Adjust the radius as you like */
-  border: 1px solid #ccc; /* Optional: to ensure border looks nice */
-  padding: 6px 10px; /* Optional: better padding */
-  font-size: 14px; /* Optional: consistent font */
-  box-sizing: border-box;
-}
-
-.time-repeat-row .repeat-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.time-repeat-row .repeat-toggle label {
-  min-width: 60px;
-  font-weight: 600;
-  color: #444;
-  cursor: pointer;
-}
-
-.time-picker {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* space between label and input */
-}
-
-.time-picker label {
-  min-width: 60px; /* fixed width to align multiple labels if needed */
-  font-weight: 600;
-  color: #444;
-}
-
-
-/* =======================================================
-   Tables
-======================================================= */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -510,144 +477,61 @@ th, td {
   text-align: left;
 }
 
-/* Specific weekly alarms table */
-.weekly-alarms-table table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.weekly-alarms-table th,
-.weekly-alarms-table td {
-  padding: 12px 8px;
-  border-bottom: 1px solid #ccc;
-  vertical-align: top;
-}
-
-.weekly-alarms-table .day-col {
-  width: 50px;
-}
-
-.weekly-alarms-table .day-label {
-  font-weight: bold;
-  text-align: center;
-}
 
 /* =======================================================
-   Images
+   14. ALARM TABLE (SCROLLABLE)
 ======================================================= */
+
+.alarm-table-container {
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-x: auto;
+  position: relative;
+  background: transparent;
+}
+
+.alarm-table {
+  position: relative;
+}
+
+.alarm-table table {
+  min-width: 900px;
+}
+
+/* Sticky day column */
+
+.alarm-table th:first-child,
+.alarm-table td.day-label {
+  position: sticky;
+  left: 0;
+  background: #fdfde4;
+  z-index: 10;
+  box-shadow: 2px 0 5px -2px rgba(0,0,0,0.1);
+}
+
+
+/* =======================================================
+   15. IMAGE COMPONENTS
+======================================================= */
+
 img.full-img {
   width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
   max-height: 100%;
+  opacity: 0.5;
 }
 
-/* Image with description container */
-.image-with-description {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  height: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 10px;
-  align-items: center;
-}
-
-.image-with-description .top-image {
-  max-height: 35vh;
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.image-with-description .top-image img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: 8px;
-}
-
-.image-with-description .bottom-section {
-  max-width: 600px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 12px;
-  overflow-y: auto;
-  padding: 0 20px;
-  box-sizing: border-box;
-}
-
-.image-with-description .media-title-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.image-with-description .left-image img {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-@media (max-width: 820px) {
-  .card,
-  .buttons {
-    width: 100%;
-    max-width: 95%;
-  }
-  .content-split {
-    flex-direction: column;
-  }
-  .left-pane,
-  .right-pane {
-    width: 100%;
-  }
-  .buttons {
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-  }
-  .buttons button {
-    width: 100%;
-    max-width: 200px;
-  }
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
-
-.toast {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background: #52eb0e;
-  color: #000;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-weight: 500;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 9999;
-}
-.toast.show {
+.full-img.full-opacity {
   opacity: 1;
 }
 
-
+.dynamic-img {
+  height: auto;
+  opacity: 1;
+  max-width: 200px;
+}
 
 .image-container {
   display: flex;
@@ -656,11 +540,199 @@ img.full-img {
   padding: 1rem;
 }
 
+/* Marketplace Component Styles */
+/* Center the bottom-section vertically inside the image-with-description */
+.image-with-description {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical centering */
+  align-items: center;       /* horizontal centering */
+  height: 100%;              /* use full card height */
+  box-sizing: border-box;
+  padding: 20px;             /* optional padding from edges */
+}
+
+/* Top image padding */
+.image-with-description .top-image {
+  max-height: 35vh;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center; /* center horizontally */
+  align-items: center;     /* center vertically inside container */
+  overflow: hidden;
+  padding-top: 20px;       /* <-- Add some space from top */
+  padding-bottom: 20px;    /* optional: spacing below image */
+}
+
+.image-with-description .top-image img.main-image {
+  max-width: 30%;   /* scale image down */
+  height: auto;     /* maintain aspect ratio */
+  display: block;   /* remove inline spacing issues */
+  border-radius: 8px; /* optional: rounded corners */
+}
+
+/* Bottom section: center content and add padding */
+.image-with-description .bottom-section {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* horizontal center */
+  text-align: center;  /* ensure text centered */
+  gap: 16px;           /* spacing between children */
+  overflow-y: auto;
+  padding: 20px;       /* <-- add padding around bottom section */
+  box-sizing: border-box;
+}
+
+/* Bottom message */
+.image-with-description .bottom-section .description {
+  text-align: center;  /* center text */
+  padding-top: 10px;   /* add space above message */
+  font-size: 1rem;     /* optional: increase size if needed */
+  color: #333;         /* optional: darker text */
+}
+
+/* Marketplace left image + title inline */
+.image-with-description .media-title-group {
+  display: flex;
+  align-items: baseline; /* vertically center text with image */
+  gap: 12px;           /* spacing between image and text */
+}
+
+.image-with-description .left-image img {
+  width: 30px;      /* adjust to desired size */
+  height: 30px;     /* keep square */
+  object-fit: cover; 
+  border-radius: 8px; /* optional rounded corners */
+}
+
+.image-with-description .media-title-group .title {
+  font-size: 1.25rem; /* larger than default */
+  font-weight: 600;   /* optional bold */
+  color: #333;
+  line-height: 1.2;   /* align nicely with icon */
+}
+
+/* Center MarketplaceComponent inside full content */
+.content-full > .image-with-description {
+  margin: 0 auto;         /* center horizontally */
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* horizontal center of children */
+  justify-content: flex-start; /* keep top alignment */
+  width: 100%;            /* use full width */
+  max-width: 600px;       /* limit to card content width */
+  box-sizing: border-box;
+}
+
+/* =======================================================
+   16. INFO CARD COMPONENT
+======================================================= */
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  text-align: center;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.info-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.info-text {
+  font-size: 14px;
+  color: #555;
+  max-width: 600px;
+}
+
+.info-image {
+  max-height: 45%;
+  width: auto;
+  max-width: 45%;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.info-image:hover {
+  transform: scale(1.05);
+}
+
+.info-btn {
+  margin-top: 10px;
+}
+
+
+/* =======================================================
+   17. MODAL COMPONENT
+======================================================= */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.modal-description {
+  font-size: 14px;
+  color: #000;
+  margin-bottom: 20px;
+}
+
+
+/* =======================================================
+   18. SMALL TEXT UTILITIES
+======================================================= */
+
+.description-small-underline {
+  font-size: 12px;
+  text-decoration: underline;
+  color: #555;
+  margin-top: 8px;
+}
+
+
+/* =======================================================
+   19. FLOATING BUTTON
+======================================================= */
+
 .floating-btn {
   position: absolute;
   bottom: 20px;
   right: 20px;
-  background-color: #007bff; /* Customize button color */
+  background-color: #007bff;
   border: none;
   border-radius: 50%;
   padding: 12px;
@@ -676,9 +748,82 @@ img.full-img {
 .floating-btn img {
   width: 24px;
   height: 24px;
-  pointer-events: none; /* So click goes to button */
+  pointer-events: none;
 }
 
 .floating-btn:hover {
   background-color: #0056b3;
+}
+
+
+/* =======================================================
+   20. TOAST NOTIFICATION
+======================================================= */
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #52eb0e;
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+
+/* =======================================================
+   21. ANIMATIONS
+======================================================= */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+
+/* =======================================================
+   22. RESPONSIVE DESIGN
+======================================================= */
+
+@media (max-width: 820px) {
+
+  .card,
+  .buttons {
+    width: 100%;
+    max-width: 95%;
+  }
+
+  .content-split {
+    flex-direction: column;
+  }
+
+  .left-pane,
+  .right-pane {
+    width: 100%;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .buttons button {
+    width: 100%;
+    max-width: 200px;
+  }
+
 }
