@@ -18,10 +18,15 @@
 							<i class="material-icons icon-inline">access_time</i>
 							<span>{{ globalHeaderText }}</span>
 						</div>
-						<div class="header-right">
-							<i class="material-icons icon-inline">more_vert</i>
+						<div 
+							class="header-right"
+							:class="{ 'clickable-title': currentCard.titleLink !== undefined }"
+							@click="currentCard.titleLink !== undefined && navigateToCard(currentCard.titleLink)"
+						>
+							<!--<i class="material-icons icon-inline">more_vert</i> -->
 							{{ currentCard.title }}
 						</div>
+						
 					</div>
 					<div class="card-content">
 						<!-- FULL Layout -->
@@ -85,7 +90,7 @@
 							<h1>¡Bienvenido!</h1>
 							<div class="button-group">
 								<button class="btn btn-primary btn-rounded-md" @click="goToCard(1)">Regístrate</button>
-								<button class="btn btn-disabled btn-rounded-md" @click="goToCard(4)">Continuar como usuario anónimo</button>
+								<button class="btn btn-secondary btn-success  btn-rounded-md" @click="goToCard(4)">Continuar como usuario anónimo</button>
 							</div>
 						</div>`,
 				methods: {
@@ -101,9 +106,8 @@
   template: `
     <div class="image-container">
       <img 
-        class="full-img full-opacity" 
-        :src="imgSrc" 
-        :style="{ maxWidth: data.maxWidth || '200px' }" 
+        class="full-img full-opacity dynamic-img" 
+        :src="imgSrc"
         @error="onError" 
         alt="Image" 
       />
@@ -117,7 +121,7 @@
   },
   methods: {
     onError() {
-      this.imgSrc = 'fallback.png'; // fallback image
+      this.imgSrc = 'assets/fallback.png'; // fallback image
     }
   }
 };
@@ -148,7 +152,7 @@
 					};
 				},
 				methods: {
-					onError() { this.imgSrc = 'fallback.png'; },
+					onError() { this.imgSrc = 'assets/fallback.png'; },
 					buttonClicked() { showToast('Descargar!!!'); },
 					goToCard(index) { this.$emit('navigate', index); },
 					handleClick(index) {
@@ -170,7 +174,7 @@
 				},
 				methods: {
 					onError() {
-						this.imgSrc = 'fallback.png'; // Or any default/fallback image
+						this.imgSrc = 'assets/fallback.png'; // Or any default/fallback image
 					}
 				}
 			};
@@ -335,7 +339,7 @@
 				data() {
 					return {
 					internalAlarms: JSON.parse(JSON.stringify(this.data.alarms)),
-					imgSrc: this.data.imgSrc || 'default-icon.png' // fallback if not provided
+					imgSrc: this.data.imgSrc || 'assets/default-icon.png' // fallback if not provided
 					};
 				},
 				template: `
@@ -536,7 +540,8 @@
 						currentIndex: 0,
 						globalHeaderText: 'Alarm Challenge',
 						cards: [{
-							title: 'Inicio',
+							title: 'Inicia sesión',
+							titleLink: 3,
 							options: 'View | Fill',
 							layout: 'split',
 							component: {
@@ -545,7 +550,7 @@
 							},
 							data: {
 								left: {
-									src: 'background.png',
+									src: 'assets/background.png',
 									maxWidth: '100%'
 								},
 								right: {}
@@ -560,7 +565,7 @@
 							},
 							data: {
 								left: {
-									src: 'background.png',
+									src: 'assets/background.png',
 									maxWidth: '100%'
 								},
 								right: {}
@@ -570,8 +575,8 @@
 							layout: 'full',
 							component: MarketplaceComponent,
 							data: {
-								topImage: 'mobile.png',
-								bottomLeftImage: 'googlePlay.png',
+								topImage: 'assets/mobile.png',
+								bottomLeftImage: 'assets/googlePlay.png',
 								bottomTitle: 'Descarga la App Mobile',
 								bottomDescription: `Para usar la plataforma, descarga la app mobile disponible en android
 	Si ya la tienes puedes ir a escanear el código qr para iniciar sesión.`
@@ -583,7 +588,7 @@
 							data: {
 								title: "Escanear código QR",
 								text: "Escanea con tu camara el siguiente QR",
-								imgSrc: "QR.png",
+								imgSrc: "assets/QR.png",
 								buttonText: "Volver",
 								modalTitle: "Ingreso exitoso!",
 								modalDescription: "Dispositivo vinculado exitosamente"
@@ -598,7 +603,7 @@
 							},
 							data: {
 								left: {
-									src: 'background.png',
+									src: 'assets/background.png',
 									caption: 'Left pane image'
 								},
 								right: {
@@ -615,7 +620,7 @@
 							},
 							data: {
 								left: {
-									src: 'background.png',
+									src: 'assets/background.png',
 									caption: 'Left pane image'
 								},
 								right: {
@@ -627,7 +632,7 @@
 							layout: 'full',
 							component: AlarmTableComponent,
 							data: {
-								imgSrc: 'plus50.png', // <--- Your floating button image
+								imgSrc: 'assets/plus50.png', // <--- Your floating button image
 								alarms:[{
 									name: 'Lunes',
 									alarms: [{
