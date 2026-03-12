@@ -21,7 +21,7 @@
 						<div 
 							class="header-right"
 							:class="{ 'clickable-title': currentCard.titleLink !== undefined }"
-							@click="currentCard.titleLink !== undefined && navigateToCard(currentCard.titleLink)"
+							@click="navigateIfLinked"
 						>
 							<!--<i class="material-icons icon-inline">more_vert</i> -->
 							{{ currentCard.title }}
@@ -89,7 +89,7 @@
 						<div class="Welcome-form">
 							<h1>¡Bienvenido!</h1>
 							<div class="button-group">
-								<button class="btn btn-primary btn-rounded-md" @click="goToCard(1)">Regístrate</button>
+								<button class="btn btn-main" @click="goToCard(1)">Regístrate</button>
 								<button class="btn btn-secondary btn-success  btn-rounded-md" @click="goToCard(4)">Continuar como usuario anónimo</button>
 							</div>
 						</div>`,
@@ -142,7 +142,7 @@
 								</div>
 								<div class="description">{{ data.bottomDescription }}</div>
 								<!-- New Button -->
-								<button class="btn btn-primary btn-rounded-md" @click="handleClick(2)">Descargar Ahora</button>
+								<button class="btn btn-main" @click="handleClick(2)">Descargar Ahora</button>
 							</div>
 						</div>`,
 				props: ['data'],
@@ -213,13 +213,14 @@
 				template: `
 						
 						<div class="signin-form">
+							<h2 class="form-title">Crea una cuenta</h2>
 							<LabeledInputComponent label="Nombre" v-model="form.name" />
 							<LabeledInputComponent label="Email" v-model="form.email" />
 							<LabeledInputComponent label="Número telefónico" v-model="form.phone" />
 							<LabeledInputComponent label="Contraseña" v-model="form.password" type="password" />
 							<LabeledInputComponent label="Confirmar contraseña" v-model="form.password2" type="password" />
 							<div class="button-group">
-								<button class="btn btn-primary btn-rounded-md" @click="submit">Crear cuenta</button>
+								<button class="btn btn-main" @click="goToCard(2)">Crear cuenta</button>
 							</div>
 						</div>`,
 				methods: {
@@ -249,7 +250,7 @@
 							<h3>Ingresa tu número</h3>
 							<LabeledInputComponent label="Número telefónico" v-model="form.phone" />
 							<div class="button-group">
-								<button class="btn btn-primary btn-rounded-md" @click="goToCard(5)">Siguiente</button>
+								<button class="btn btn-main" @click="goToCard(5)">Siguiente</button>
 							</div>
 							<div class="description description-small-underline">{{ data.description }}</div>
 						</div>`,
@@ -279,7 +280,7 @@
 						<div class="Welcome-form">
 							<h2>Hemos enviado un código a tu celular, introdúcelo</h2>
 							<LabeledInputComponent label="Código" v-model="form.phone_code" />
-							<button class="btn btn-primary btn-rounded-md" @click="goToCard(6)">Confirmar</button>
+							<button class="btn btn-main" @click="goToCard(6)">Confirmar</button>
 							<div class="description">{{ data.description }}</div>
 						</div>`,
 				methods: {
@@ -433,7 +434,7 @@
 							<h3>Crear Nueva Alarma</h3>
 							<div class="form-group input">
 								<label>Nombre de la alarma</label>
-								<input type="text" v-model="form.name" placeholder="Ej: Mañana" />
+								<input class="form-input" type="text" v-model="form.name" placeholder="Ej: Mañana" />
 							</div>
 							<div class="form-group day-selector">
 								<label>Días de la semana</label>
@@ -528,7 +529,7 @@
 						<div class="modal-content">
 						<h2 class="modal-title">{{ data.modalTitle }}</h2>
 						<p class="modal-description">{{ data.modalDescription }}</p>
-						<button class="btn btn-primary btn-rounded-md" @click="closeModal">Close</button>
+						<button class="btn btn-main" @click="closeModal">Close</button>
 						</div>
 					</div>
 					</div>
@@ -556,7 +557,8 @@
 								right: {}
 							}
 						}, {
-							title: 'Registro',
+							title: 'Inicia sesión',
+							titleLink: 3,
 							options: 'Submit',
 							layout: 'split',
 							component: {
@@ -571,7 +573,8 @@
 								right: {}
 							}
 						}, {
-							title: 'Descarga la App',
+							title: 'Volver a inicio',
+							titleLink: 0,
 							layout: 'full',
 							component: MarketplaceComponent,
 							data: {
@@ -772,6 +775,11 @@
 					},
 					goHome() {
 						this.currentIndex = 0;
+					},
+					navigateIfLinked() {
+						if (this.currentCard.titleLink !== undefined) {
+							this.navigateToCard(this.currentCard.titleLink);
+						}
 					},
 					navigateToCard(index) {
 						if (index >= 0 && index < this.cards.length) {

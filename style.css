@@ -185,6 +185,12 @@ button.btn {
   justify-self: center;
 }
 
+.btn-main {
+  background-color: #52eb0e;
+  color: black;
+  border-radius: 8px;
+}
+
 .counter {
   margin-top: 10px;
   font-size: 14px;
@@ -227,6 +233,44 @@ textarea {
   box-sizing: border-box;
 }
 
+.form-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* SignIn form inputs */
+.signin-form .labeled-input input {
+  width: 100%;
+  padding: 8px 14px;      /* more padding for larger click area */
+  font-size: 16px;          /* larger font */
+  border: 1px solid #ccc;   /* soft border */
+  border-radius: 8px;       /* rounded corners */
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.signin-form .labeled-input input:focus {
+  border-color: #52eb0e;   /* green highlight */
+  box-shadow: 0 0 5px rgba(82, 235, 14, 0.5);
+  outline: none;
+}
+
+/* Form title styling */
+.signin-form .form-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-align: center;
+  color: #333;
+}
+
+.signin-form .labeled-input {
+  margin-bottom: 4px; /* spacing between inputs */
+}
 
 /* =======================================================
    8. WELCOME COMPONENT LAYOUT
@@ -483,6 +527,92 @@ img.full-img {
   padding: 1rem;
 }
 
+/* Marketplace Component Styles */
+/* Center the bottom-section vertically inside the image-with-description */
+.image-with-description {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical centering */
+  align-items: center;       /* horizontal centering */
+  height: 100%;              /* use full card height */
+  box-sizing: border-box;
+  padding: 20px;             /* optional padding from edges */
+}
+
+/* Top image padding */
+.image-with-description .top-image {
+  max-height: 35vh;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center; /* center horizontally */
+  align-items: center;     /* center vertically inside container */
+  overflow: hidden;
+  padding-top: 20px;       /* <-- Add some space from top */
+  padding-bottom: 20px;    /* optional: spacing below image */
+}
+
+.image-with-description .top-image img.main-image {
+  max-width: 30%;   /* scale image down */
+  height: auto;     /* maintain aspect ratio */
+  display: block;   /* remove inline spacing issues */
+  border-radius: 8px; /* optional: rounded corners */
+}
+
+/* Bottom section: center content and add padding */
+.image-with-description .bottom-section {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* horizontal center */
+  text-align: center;  /* ensure text centered */
+  gap: 16px;           /* spacing between children */
+  overflow-y: auto;
+  padding: 20px;       /* <-- add padding around bottom section */
+  box-sizing: border-box;
+}
+
+/* Bottom message */
+.image-with-description .bottom-section .description {
+  text-align: center;  /* center text */
+  padding-top: 10px;   /* add space above message */
+  font-size: 1rem;     /* optional: increase size if needed */
+  color: #333;         /* optional: darker text */
+}
+
+/* Marketplace left image + title inline */
+.image-with-description .media-title-group {
+  display: flex;
+  align-items: baseline; /* vertically center text with image */
+  gap: 12px;           /* spacing between image and text */
+}
+
+.image-with-description .left-image img {
+  width: 30px;      /* adjust to desired size */
+  height: 30px;     /* keep square */
+  object-fit: cover; 
+  border-radius: 8px; /* optional rounded corners */
+}
+
+.image-with-description .media-title-group .title {
+  font-size: 1.25rem; /* larger than default */
+  font-weight: 600;   /* optional bold */
+  color: #333;
+  line-height: 1.2;   /* align nicely with icon */
+}
+
+/* Center MarketplaceComponent inside full content */
+.content-full > .image-with-description {
+  margin: 0 auto;         /* center horizontally */
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* horizontal center of children */
+  justify-content: flex-start; /* keep top alignment */
+  width: 100%;            /* use full width */
+  max-width: 600px;       /* limit to card content width */
+  box-sizing: border-box;
+}
 
 /* =======================================================
    16. INFO CARD COMPONENT
