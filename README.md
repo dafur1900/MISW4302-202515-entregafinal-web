@@ -18,10 +18,8 @@ De esta forma, Alarm Challenge no solo busca que el usuario apague una alarma, s
 
 ## 📁 Estructura del Proyecto
 
-📦 AlarmChallenge/
-|
+📦 AlarmChallenge
 |-- 📄 index.html # Archivo principal de la aplicación
-|
 |-- 🎨 style.css # Estilos personalizados para el layout y componentes
 |-- 🖼️ assets/ # Carpeta con imágenes como fondos, botones, QR, etc.
 | |-- background.png
