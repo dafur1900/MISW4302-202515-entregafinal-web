@@ -15,7 +15,7 @@ body {
 ======================================================= */
 .card {
   width: 800px;
-  height: 600px;
+  height: 545px;
   max-height: 90vh;
   background: white;
   border-radius: 8px;
@@ -53,7 +53,7 @@ body {
 .card-content {
   flex: 1;
   display: flex;
-  padding: 20px;
+  padding: 0px;
   gap: 20px;
   background: #fdfde4;
   overflow: auto;
@@ -71,20 +71,24 @@ body {
 
 .left-pane,
 .right-pane {
-  padding: 15px;
-  border-radius: 6px;
+  border-radius: 1px;
   overflow: auto;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+  background: #fdfde4;;
 }
 
 .left-pane {
   width: 65%;
-  background: #e9f0ff;
 }
 
 .right-pane {
+  display: flex;            /* enable flex */
+  flex-direction: column;   /* stack children vertically */
+  justify-content: center;  /* center vertically */
+  align-items: center;      /* optional: center horizontally */
+  padding: 15px;
   width: 35%;
-  background: #fff3cd;
+  overflow: auto;
 }
 
 /* =======================================================
@@ -95,7 +99,7 @@ body {
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 500;
-  color: white;
+  color: black;
   border: none;
   cursor: pointer;
   border-radius: 6px;
@@ -121,6 +125,11 @@ button.btn {
 .btn-primary,
 .btn-success {
   background-color: #52eb0e;
+}
+
+btn-secondary,
+.btn-success {
+  background-color: #a5ed85;
 }
 
 .btn-disabled,
@@ -211,12 +220,17 @@ textarea {
 
 /* WelcomeForm buttons layout */
 .Welcome-form {
+  width: 100%;       /* or max-width: 300px; */
   display: flex;
   flex-direction: column;
   gap: 20px;
+  justify-content: center; /* optional: center content inside itself */
+  align-items: center;     /* horizontally center buttons */
 }
 
 .button-group {
+	align-items: center; /* Centers vertically */
+  justify-content: center; /* Centers horizontally (optional) */
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -510,6 +524,39 @@ th, td {
   text-align: left;
 }
 
+/*.alarm-table-container {
+	padding: 20px;
+	box-sizing: border-box;
+	overflow-x: auto;
+	background: transparent;
+}*/
+
+.alarm-table-container {
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-x: auto;       /* enable horizontal scroll */
+  position: relative;     /* ensure sticky positioning inside works */
+  background: transparent; /* optional */
+}
+
+.alarm-table table {
+  min-width: 900px;
+}
+
+/* Make the first column sticky */
+.alarm-table th:first-child,
+.alarm-table td.day-label {
+  position: sticky;
+  left: 0;
+  background: #fdfde4; /* match your table background */
+  z-index: 10; /* above other table cells */
+  box-shadow: 2px 0 5px -2px rgba(0,0,0,0.1); /* subtle separation */
+}
+
+.alarm-table td.day-label {
+  padding-right: 8px;
+}
+
 /* Specific weekly alarms table */
 .weekly-alarms-table table {
   width: 100%;
@@ -542,6 +589,7 @@ img.full-img {
   display: block;
   object-fit: contain;
   max-height: 100%;
+  opacity: 0.5;
 }
 
 /* Image with description container */
@@ -681,4 +729,117 @@ img.full-img {
 
 .floating-btn:hover {
   background-color: #0056b3;
+}
+
+/* extracted from HTML */
+
+.alarm-table {
+  position: relative;
+}
+
+.dynamic-img {
+  height: auto;
+  opacity: 1;
+}
+
+.alarm-table {
+  position: relative;
+}
+
+.full-img.full-opacity {
+  height: auto;
+  opacity: 1;
+}
+
+.description-small-underline {
+  font-size: 12px;           /* smaller text */
+  text-decoration: underline; /* underline the text */
+  color: #555;               /* optional: slightly gray for readability */
+  margin-top: 8px;           /* optional spacing */
+}
+
+
+/* Container */
+.info-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* centers vertically */
+  gap: 16px;              /* smaller spacing to reduce overflow */
+  padding: 16px;
+  text-align: center;
+  height: 100%;           /* takes the full height of parent */
+  box-sizing: border-box;
+}
+
+/* Title */
+.info-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0px;
+}
+
+/* Paragraph text */
+.info-text {
+  font-size: 14px;
+  color: #555;
+  max-width: 600px;
+  text-align: center;
+}
+
+/* Image */
+.info-image {
+  max-height: 45%; /* scale relative to card */
+  width: auto;
+  max-width: 45%;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+.info-image:hover {
+  transform: scale(1.05);
+}
+
+/* Button under image */
+.info-btn {
+  margin-top: 10px;
+  width: auto;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6); /* opaque background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Modal content */
+.modal-content {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+}
+
+/* Modal title & description */
+.modal-title {
+  font-size: 1.5rem;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.modal-description {
+  font-size: 14px;
+  color: #000;
+  margin-bottom: 20px;
 }

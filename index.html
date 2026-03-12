@@ -82,10 +82,10 @@
 				template: `
 						
 						<div class="Welcome-form">
-							<h3>¡Bienvenido!</h3>
+							<h1>¡Bienvenido!</h1>
 							<div class="button-group">
 								<button class="btn btn-primary btn-rounded-md" @click="goToCard(1)">Regístrate</button>
-								<button class="btn btn-primary btn-rounded-md" @click="goToCard(4)">Continuar como usuario anónimo</button>
+								<button class="btn btn-disabled btn-rounded-md" @click="goToCard(4)">Continuar como usuario anónimo</button>
 							</div>
 						</div>`,
 				methods: {
@@ -101,9 +101,9 @@
   template: `
     <div class="image-container">
       <img 
-        class="full-img" 
+        class="full-img full-opacity" 
         :src="imgSrc" 
-        :style="{ maxWidth: data.maxWidth || '200px', height: 'auto' }" 
+        :style="{ maxWidth: data.maxWidth || '200px' }" 
         @error="onError" 
         alt="Image" 
       />
@@ -117,7 +117,7 @@
   },
   methods: {
     onError() {
-      this.imgSrc = 'assets/fallback.png'; // fallback image
+      this.imgSrc = 'fallback.png'; // fallback image
     }
   }
 };
@@ -148,7 +148,7 @@
 					};
 				},
 				methods: {
-					onError() { this.imgSrc = 'assets/fallback.png'; },
+					onError() { this.imgSrc = 'fallback.png'; },
 					buttonClicked() { showToast('Descargar!!!'); },
 					goToCard(index) { this.$emit('navigate', index); },
 					handleClick(index) {
@@ -170,7 +170,7 @@
 				},
 				methods: {
 					onError() {
-						this.imgSrc = 'assets/fallback.png'; // Or any default/fallback image
+						this.imgSrc = 'fallback.png'; // Or any default/fallback image
 					}
 				}
 			};
@@ -214,7 +214,9 @@
 							<LabeledInputComponent label="Número telefónico" v-model="form.phone" />
 							<LabeledInputComponent label="Contraseña" v-model="form.password" type="password" />
 							<LabeledInputComponent label="Confirmar contraseña" v-model="form.password2" type="password" />
-							<button class="btn btn-primary btn-rounded-md" @click="submit">Crear cuenta</button>
+							<div class="button-group">
+								<button class="btn btn-primary btn-rounded-md" @click="submit">Crear cuenta</button>
+							</div>
 						</div>`,
 				methods: {
 					submit() {
@@ -242,8 +244,10 @@
 						<div class="Welcome-form">
 							<h3>Ingresa tu número</h3>
 							<LabeledInputComponent label="Número telefónico" v-model="form.phone" />
-							<button class="btn btn-primary btn-rounded-md" @click="goToCard(5)">Siguiente</button>
-							<div class="description">{{ data.description }}</div>
+							<div class="button-group">
+								<button class="btn btn-primary btn-rounded-md" @click="goToCard(5)">Siguiente</button>
+							</div>
+							<div class="description description-small-underline">{{ data.description }}</div>
 						</div>`,
 				methods: {
 					submit() {
@@ -331,46 +335,42 @@
 				data() {
 					return {
 					internalAlarms: JSON.parse(JSON.stringify(this.data.alarms)),
-					imgSrc: this.data.imgSrc || 'assets/default-icon.png' // fallback if not provided
+					imgSrc: this.data.imgSrc || 'default-icon.png' // fallback if not provided
 					};
 				},
 				template: `
-					<div class="alarm-table" style="position: relative;">
+					<div class="alarm-table">
+					<div class="alarm-table-container">
 					<table>
 						<thead>
 						<tr>
 							<th>Día</th>
-							<th v-for="(col, colIndex) in 3" :key="'head-' + colIndex">Alarma {{ col }}</th>
+							<th v-for="(col, colIndex) in 6" :key="'head-' + colIndex">Alarma {{ col }}</th>
 						</tr>
 						</thead>
 						<tbody>
 						<tr v-for="(day, rowIndex) in internalAlarms" :key="'row-' + rowIndex">
 							<td class="day-label">
-							<span class="day-initial">{{ day.name[0] }}</span>
+								<span class="day-initial">{{ day.name[0] }}</span>
 							</td>
-							<td v-for="(alarm, alarmIndex) in day.alarms" :key="'cell-' + alarmIndex">
-							<div class="alarm-cell-horizontal">
-								<div class="alarm-info">
-								<div class="alarm-label">{{ alarm.label }}</div>
-								<div class="alarm-time">{{ alarm.time }}</div>
+							<td v-for="alarmIndex in 6" :key="'cell-' + alarmIndex">
+								<div v-if="day.alarms[alarmIndex-1]" class="alarm-cell-horizontal">
+									<div class="alarm-info">
+										<div class="alarm-label">{{ day.alarms[alarmIndex-1].label }}</div>
+										<div class="alarm-time">{{ day.alarms[alarmIndex-1].time }}</div>
+									</div>
+									<div class="alarm-toggle">
+										<label class="switch">
+											<input type="checkbox" v-model="day.alarms[alarmIndex-1].enabled" />
+											<span class="slider"></span>
+										</label>
+									</div>
 								</div>
-								<div class="alarm-toggle">
-								<label class="switch">
-									<input type="checkbox" v-model="alarm.enabled" />
-									<span class="slider"></span>
-								</label>
-								</div>
-							</div>
 							</td>
 						</tr>
 						</tbody>
 					</table>
-				
-					<!-- Floating Button -->
-					<button class="floating-btn" @click="goToCard(7)">
-						<img :src="imgSrc" alt="Floating Button" />
-					</button>
-					</div>
+				</div>
 				`,
 				methods: {
 					onFloatingBtnClick() {
@@ -381,8 +381,6 @@
 					}
 				}
 			};
-
-
 			const NewAlarmFormComponent = {
 				props: {
 					days: {
@@ -485,6 +483,53 @@
 						</div>
   `
 			};
+			const InfoCardComponent = {
+				props: ['data'],
+				data() {
+					return {
+					showModal: false
+					};
+				},
+				methods: {
+					openModal() {
+					this.showModal = true;
+					},
+					closeModal() {
+					this.showModal = false;
+					},
+					handleButtonClick() {
+					if (this.data.buttonAction) {
+						this.data.buttonAction();
+					}
+					}
+				},
+				template: `
+					<div class="info-card">
+					<!-- Title -->
+					<h1 class="info-title">{{ data.title }}</h1>
+				
+					<!-- Centered paragraph text -->
+					<p class="info-text">{{ data.text }}</p>
+				
+					<!-- Image with click -->
+					<img :src="data.imgSrc" class="info-image" @click="openModal" alt="Info Image" />
+				
+					<!-- Centered button -->
+					<button class="btn btn-primary btn-rounded-md info-btn" @click="handleButtonClick">
+						{{ data.buttonText }}
+					</button>
+				
+					<!-- Modal -->
+					<div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+						<div class="modal-content">
+						<h2 class="modal-title">{{ data.modalTitle }}</h2>
+						<p class="modal-description">{{ data.modalDescription }}</p>
+						<button class="btn btn-primary btn-rounded-md" @click="closeModal">Close</button>
+						</div>
+					</div>
+					</div>
+				`
+				};
 			const app = Vue.createApp({
 				data() {
 					return {
@@ -500,7 +545,7 @@
 							},
 							data: {
 								left: {
-									src: 'assets/background.png',
+									src: 'background.png',
 									maxWidth: '100%'
 								},
 								right: {}
@@ -510,12 +555,12 @@
 							options: 'Submit',
 							layout: 'split',
 							component: {
-								left: FullImageComponent,
+								left: LeftImageComponent,
 								right: SignInFormComponent
 							},
 							data: {
 								left: {
-									src: 'assets/background.png',
+									src: 'background.png',
 									maxWidth: '100%'
 								},
 								right: {}
@@ -525,22 +570,24 @@
 							layout: 'full',
 							component: MarketplaceComponent,
 							data: {
-								topImage: 'assets/mobile.png',
-								bottomLeftImage: 'assets/googlePlay.png',
+								topImage: 'mobile.png',
+								bottomLeftImage: 'googlePlay.png',
 								bottomTitle: 'Descarga la App Mobile',
 								bottomDescription: `Para usar la plataforma, descarga la app mobile disponible en android
 	Si ya la tienes puedes ir a escanear el código qr para iniciar sesión.`
 							}
 						}, {
-							title: 'Image Full Layout',
-							options: 'View',
+							title: 'QR enlace celular',
 							layout: 'full',
-							component: FullImageComponent,
+							component: InfoCardComponent,
 							data: {
-								src: 'assets/QR.png',
-								maxWidth: '50%'
+								title: "Escanear código QR",
+								text: "Escanea con tu camara el siguiente QR",
+								imgSrc: "QR.png",
+								buttonText: "Volver",
+								modalTitle: "Ingreso exitoso!",
+								modalDescription: "Dispositivo vinculado exitosamente"
 							}
-							//data: { src: 'https://via.placeholder.com/780x460?text=Full+Image' }
 						}, {
 							title: 'Registro celular',
 							options: 'View | Fill',
@@ -551,7 +598,7 @@
 							},
 							data: {
 								left: {
-									src: 'assets/background.png',
+									src: 'background.png',
 									caption: 'Left pane image'
 								},
 								right: {
@@ -568,7 +615,7 @@
 							},
 							data: {
 								left: {
-									src: 'assets/background.png',
+									src: 'background.png',
 									caption: 'Left pane image'
 								},
 								right: {
@@ -580,7 +627,7 @@
 							layout: 'full',
 							component: AlarmTableComponent,
 							data: {
-								imgSrc: 'assets/plus50.png', // <--- Your floating button image
+								imgSrc: 'plus50.png', // <--- Your floating button image
 								alarms:[{
 									name: 'Lunes',
 									alarms: [{
